@@ -1,2 +1,3 @@
 # Task.github.io
-for task reminder
+For task reminder
+with live view interactive Calendar
