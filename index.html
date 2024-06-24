@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Reminder</title>
+    <meta name="description" content="Daily Task Reminder, never forget a task.">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="todo.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
+
+</head>
+
+<body>
+
+    <h3>My Task Reminder</h3>
+    <div class="todo-grid-parent">
+        <div>
+            <div class="todo-input todo-block">
+                <span>To-do:</span>
+                <input type="text" placeholder="Enter new to-do">
+                <span>Category: </span>
+                <input type="text" placeholder="Enter category" list="categoryList">
+                <datalist id="categoryList">
+                    <option value="Genetech"></option>
+                    <option value="Siemens (RaaS)"></option>
+                    <option value="Siemens (Ad-Hoc)"></option>
+                    <option value="GPC"></option>
+                    <option value="TMH"></option>
+                    <option value="BART"></option>
+                    <option value="Rivian (RaaS)"></option>
+                    <option value="Rivian (Ad-Hoc)"></option>
+                    <option value="Ecology Action"></option>
+
+                </datalist>
+                <span>Date: </span>
+                <input type="date" id="dateInput">
+                <Span>Time: </Span>
+                <input type="time" id="timeInput">
+                <span></span>
+                <button id="addBtn">Add</button>
+                <span></span>
+                <button id="sortBtn">Sort By Date</button>
+                <span></span>
+                <label><input type="checkbox" id="shortlistBtn"> Incomplete First</label>
+            </div>
+
+            <div class="todo-block todoTable-block">
+                <div class="itemsPerPage">
+                    <span>Items per page</span>
+                    <select id="itemsPerPageSelectElem">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>20</option>
+                    </select>
+                </div>
+                <table id="todoTable">
+                    <tr>
+                        <td></td>
+                        <td>Date</td>
+                        <td>Time</td>
+                        <td>To-Do</td>
+                        <td>
+                            <select id="categoryFilter">
+                            </select>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <div class="pagination-pages">
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="todo-calendar todo-block">
+            <div id='calendar'></div>
+        </div>
+
+    </div> <!--class="todo-grid-parent"-->
+
+    <div class="todo-overlay" id="todo-overlay">
+        <div class="todo-model" id="todo-model">
+            <div class="todo-input todo-block">
+                <span>To-do:</span>
+                <input type="text" placeholder="Enter new to-do" id="todo-edit-todo">
+                <span>Category: </span>
+                <input type="text" placeholder="Enter category" list="categoryList">
+                <datalist id="todo-edit-category">
+                    <option value="Genetech"></option>
+                    <option value="Siemens (RaaS)"></option>
+                    <option value="Siemens (Ad-Hoc)"></option>
+                    <option value="GPC"></option>
+                    <option value="TMH"></option>
+                    <option value="BART"></option>
+                    <option value="Rivian (RaaS)"></option>
+                    <option value="Rivian (Ad-Hoc)"></option>
+                    <option value="Ecology Action"></option>
+
+                </datalist>
+                <span>Date: </span>
+                <input type="date" id="todo-edit-date">
+                <Span>Time: </Span>
+                <input type="time" id="todo-edit-time">
+                <span></span>
+                <button id="changeBtn">Save Change</button>
+            </div>
+        </div>
+        <div class="todo-model-close-btn" id="todo-model-close-btn">X</div>
+
+    </div>
+
+
+
+    <!-- This is just for saving in case you need-->
+
+    <!-- <option value="">All</option>
+                    <option value=" Genetech">Genetech</option>
+            <option value="Siemens (RaaS)">Siemens (RaaS)</option>
+            <option value="Siemens (Ad-Hoc)">Siemens (Ad-Hoc)</option>
+            <option value="GPC">GPC</option>
+            <option value="TMH">TMH</option>
+            <option value="BART">BART</option>
+            <option value="Rivian (RaaS)">Rivian (RaaS)</option>
+            <option value="Rivian (Ad-Hoc)">Rivian (Ad-Hoc)</option>
+            <option value="Ecology Action">Ecology Action</option> -->
+
+    <script src="todo.js"></script>
+</body>
+
+</html>
