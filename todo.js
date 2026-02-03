@@ -146,8 +146,8 @@ function todoMain() {
     }
 
     function renderRows(arr) {
-
         renderPageNumbers(arr);
+        
         if (totalPages === 0) {
           currentPage = 1;
         } else {
@@ -267,15 +267,21 @@ function todoMain() {
         }
 
         function checkboxClickCallback() {
-          trElem.classList.toggle("strike");
-
           const id = this.dataset.id;
 
+          // update data model
           for (let i = 0; i < todoList.length; i++) {
             if (todoList[i].id === id) {
               todoList[i].done = this.checked;
               break;
             }
+          }
+
+          // update row style
+          if (this.checked) {
+            trElem.classList.add("strike");
+          } else {
+            trElem.classList.remove("strike");
           }
 
           // update calendar event color
