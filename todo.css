@@ -20,7 +20,7 @@ td {
 .todo-input {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    row-gap: .5rem;
+    gap: 0.5rem;
 }
 
 .todoTable-block {
@@ -40,13 +40,13 @@ td {
     cursor: pointer;
 }
 
-::-ms-input-placeholder {
+/* ::-ms-input-placeholder {
     color: #183c31;
 }
 
 ::-webkit-input-placeholder {
     color: #183c31;
-}
+} */
 
 ::placeholder {
     color: #578c8e;
@@ -64,9 +64,6 @@ h3 {
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
-
 }
 
 .todo-block {
@@ -104,11 +101,10 @@ h3 {
 .todo-overlay {
     width: 100vw;
     height: 100vh;
-    background-color: #d0d6d6;
+    background-color: rgba(208, 214, 214, 0.9); /* changed */
     position: fixed;
     top: 0;
     left: 0;
-    opacity: 0.9;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -116,6 +112,7 @@ h3 {
     transition: transform 250ms;
     z-index: 2;
 }
+
 
 .todo-model {
     width: 50vw;
@@ -179,3 +176,4 @@ https: //t3.ftcdn.net/jpg/03/09/36/96/360_F_309369654_VFwhkNoIZmlw1glumMWImZ1jqT
 https: //t3.ftcdn.net/jpg/06/91/01/24/240_F_691012498_PdFzCobTgyWUy2hNW5TzVPIUV3fg6WPB.jpg
 https: //t4.ftcdn.net/jpg/07/71/12/41/240_F_771124115_phm6LEhBGGiJWwj1BneMF9ow4TsWvTx0.jpg
 https: //t3.ftcdn.net/jpg/04/60/79/46/240_F_460794603_OfXEYsF6RiwCJYbmOIAuKyExtcVTRq6S.jpg
+*/
