@@ -20,9 +20,9 @@
         <div>
             <div class="todo-input todo-block">
                 <span>To-do:</span>
-                <input type="text" placeholder="Enter new to-do">
+                <input type="text" placeholder="Enter new to-do" id="todoInput">
                 <span>Category: </span>
-                <input type="text" placeholder="Enter category" list="categoryList">
+                <input type="text" placeholder="Enter category" list="categoryList" id="categoryInput">
                 <datalist id="categoryList">
                     <option value="Gntch"></option>
                     <option value="Smns (RS)"></option>
@@ -56,18 +56,19 @@
                         <option>20</option>
                     </select>
                 </div>
+                
                 <table id="todoTable">
+                  <thead>
                     <tr>
-                        <td></td>
-                        <td>Date</td>
-                        <td>Time</td>
-                        <td>To-Do</td>
-                        <td>
-                            <select id="categoryFilter">
-                            </select>
-                        </td>
-                        <td></td>
+                      <th></th>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>To-Do</th>
+                      <th><select id="categoryFilter"></select></th>
+                      <th></th>
                     </tr>
+                  </thead>
+                  <tbody></tbody>
                 </table>
 
                 <div class="pagination-pages">
@@ -89,19 +90,8 @@
                 <span>To-do:</span>
                 <input type="text" placeholder="Enter new to-do" id="todo-edit-todo">
                 <span>Category: </span>
-                <input type="text" placeholder="Enter category" list="categoryList">
-                <datalist id="todo-edit-category">
-                    <option value="Gntch"></option>
-                    <option value="Smns (RS)"></option>
-                    <option value="Smns (A-Hc)"></option>
-                    <option value="GP"></option>
-                    <option value="MH"></option>
-                    <option value="BRT"></option>
-                    <option value="Rvn (RS)"></option>
-                    <option value="Rvn (A-Hc)"></option>
-                    <option value="EA"></option>
+                <input type="text" placeholder="Enter category" id="todo-edit-category" list="categoryList">
 
-                </datalist>
                 <span>Date: </span>
                 <input type="date" id="todo-edit-date">
                 <Span>Time: </Span>
