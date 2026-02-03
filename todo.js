@@ -374,12 +374,12 @@ function todoMain() {
     }
 
     function addEvent({ id, todo, date, time, done }) {
-        calendar.addEvent({
-          id,
-          title: todo,
-          start: time === "" ? date : `${date}T${time}`,
-          backgroundColor: done ? "red" : "#041421",
-        });
+      calendar.addEvent({
+        id,
+        title: todo,
+        start: time === "" ? date : `${date}T${time}`,
+        backgroundColor: done ? "red" : "#041421",
+      });
     }
 
     function clearTable() {
