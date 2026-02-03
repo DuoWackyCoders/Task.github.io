@@ -33,8 +33,8 @@ function todoMain() {
 
 
     function getElements() {
-        inputElem = document.getElementsByTagName("input")[0];
-        inputElem2 = document.getElementsByTagName("input")[1];
+        inputElem = document.getElementById("todoInput");
+        inputElem2 = document.getElementById("categoryInput");
         dateInput = document.getElementById("dateInput");
         timeInput = document.getElementById("timeInput");
         addButton = document.getElementById("addBtn");
@@ -148,7 +148,11 @@ function todoMain() {
     function renderRows(arr) {
 
         renderPageNumbers(arr);
-        currentPage = currentPage > totalPages ? totalPages : currentPage;
+        if (totalPages === 0) {
+          currentPage = 1;
+        } else {
+          currentPage = Math.min(currentPage, totalPages);
+        }
 
         arr.forEach(addEvent);
 
@@ -162,7 +166,9 @@ function todoMain() {
         //add a new rule
 
         let trElem = document.createElement("tr");
-        todoTable.appendChild(trElem);
+        const tbody = todoTable.querySelector("tbody");
+        tbody.appendChild(trElem);
+
         trElem.draggable = "true";
         trElem.dataset.id = id;
 
@@ -261,14 +267,27 @@ function todoMain() {
         }
 
         function checkboxClickCallback() {
-            trElem.classList.toggle("strike");
-            for (let i = 0; i < todoList.length; i++) {
-                if (todoList[i].id == this.dataset.id)
-                    todoList[i]["done"] = this.checked;
+          trElem.classList.toggle("strike");
+
+          const id = this.dataset.id;
+
+          for (let i = 0; i < todoList.length; i++) {
+            if (todoList[i].id === id) {
+              todoList[i].done = this.checked;
+              break;
             }
-            save();
-            multipleFilter();
+          }
+
+          // update calendar event color
+          const ev = calendar.getEventById(id);
+          if (ev) {
+            ev.setProp("backgroundColor", this.checked ? "red" : "#041421");
+          }
+
+          save();
+          multipleFilter();
         }
+
     }
 
     function _uuid() {
@@ -350,10 +369,10 @@ function todoMain() {
 
     function addEvent({ id, todo, date, time, done }) {
         calendar.addEvent({
-            id: id,
-            title: todo,
-            start: time === "" ? date : `${date}T${time}`,
-            backgroundcolor: (done ? "red" : "#041421"),
+          id,
+          title: todo,
+          start: time === "" ? date : `${date}T${time}`,
+          backgroundColor: done ? "red" : "#041421",
         });
     }
 
@@ -512,7 +531,7 @@ function todoMain() {
                     category: category,
                     date: date,
                     time: time,
-                    done: false,
+                    done: todoList[i].done,
                 };
 
                 addEvent(todoList[i]);
