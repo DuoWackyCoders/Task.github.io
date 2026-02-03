@@ -2,7 +2,7 @@
 
 body {
     background-color: #578c8e;
-    font-family: "Poppins" sans-serif;
+    font-family: "Poppins", sans-serif;
     font-weight: 400;
     font-style: normal;
 
@@ -103,7 +103,7 @@ h3 {
 
 .todo-overlay {
     width: 100vw;
-    height: 100vw;
+    height: 100vh;
     background-color: #d0d6d6;
     position: fixed;
     top: 0;
