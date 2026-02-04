@@ -28,6 +28,9 @@ function todoMain() {
     addListeners();
     initCalendar();
     load();
+    clearTable();                  // ✅ ensure calendar/table start clean
+    requestNotifPermission();
+    sendMorningBriefingIfNeeded();
     renderRows(todoList);
     updateSelectOptions();
 
@@ -260,10 +263,9 @@ function todoMain() {
             }
             save();
 
-            // remove from calendar
-            let calendarEvent = calendar.getEventById(this.dataset.id);
-            if (calendarEvent !== null)
-                calendarEvent.remove();
+            const calendarEvent = calendar.getEventById(this.dataset.id);
+            if (calendarEvent) calendarEvent.remove();
+
         }
 
         function checkboxClickCallback() {
@@ -286,9 +288,9 @@ function todoMain() {
 
           // update calendar event color
           const ev = calendar.getEventById(id);
-          if (ev) {
-            ev.setProp("backgroundColor", this.checked ? "red" : "#041421");
-          }
+            if (ev) {
+              ev.setProp("color", this.checked ? "#7a0000" : "#041421");
+            }
 
           save();
           multipleFilter();
@@ -378,19 +380,17 @@ function todoMain() {
         id,
         title: todo,
         start: time === "" ? date : `${date}T${time}`,
-        backgroundColor: done ? "red" : "#041421",
+        color: done ? "#7a0000" : "#041421", // dark red when completed
       });
     }
 
     function clearTable() {
-        // Empty the table, keeping the first row
-        let trElems = todoTable.getElementsByTagName("tr");
-        for (let i = trElems.length - 1; i > 0; i--) {
-            trElems[i].remove();
-        }
+      const tbody = todoTable.querySelector("tbody");
+      if (tbody) tbody.innerHTML = "";
 
-        calendar.getEvents().forEach(event => event.remove());
+      calendar.getEvents().forEach(ev => ev.remove());
     }
+
 
     function multipleFilter() {
         clearTable();
@@ -743,5 +743,67 @@ function todoMain() {
         localStorage.setItem("todo-itemsPerPage", itemsPerPage);
         multipleFilter();
     }
-}
 
+    function requestNotifPermission() {
+      if (!("Notification" in window)) return;
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then(() => sendMorningBriefingIfNeeded());
+      }
+    }
+
+    function formatTimeHHMM(t) {
+      if (!t) return "—";
+      const [h, m] = t.split(":").map(Number);
+      const hour12 = ((h + 11) % 12) + 1;
+      const ampm = h >= 12 ? "PM" : "AM";
+      return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
+    }
+
+    function buildTodaysAgendaLines() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      const todayKey = `${yyyy}-${mm}-${dd}`;
+
+      const todays = todoList
+        .filter(t => t.date === todayKey && !t.done)
+        .sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+
+      if (todays.length === 0) {
+        return { todayKey, lines: ["You are clear today. Use the time wisely."] };
+      }
+
+      const lines = [];
+      todays.forEach(t => {
+        lines.push(`• ${formatTimeHHMM(t.time)} — ${t.todo}`);
+      });
+
+      return { todayKey, lines };
+    }
+
+    function sendMorningBriefingIfNeeded() {
+      if (!("Notification" in window)) return;
+      if (Notification.permission !== "granted") return;
+
+      const { todayKey, lines } = buildTodaysAgendaLines();
+
+      const lastSent = localStorage.getItem("todo-lastMorningBriefing");
+      if (lastSent === todayKey) return;
+
+      new Notification("Daily Command Briefing", {
+        body:
+    `Good morning, High Commander. 
+    
+    It's time to reign. Today's tasks ready for execution!:
+
+    ${lines.join("\n")}
+
+    Execute with precision.`,
+        tag: "todo-daily-briefing",
+      });
+
+      localStorage.setItem("todo-lastMorningBriefing", todayKey);
+    }
+
+}
