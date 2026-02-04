@@ -21,7 +21,9 @@ function todoMain() {
         totalPages = 0,
         itemsPerPageSelectElem,
         peginationCtnr,
-        todoModelCloseBtn;
+        todoModelCloseBtn,
+        launchPendingBtn;
+
 
 
     getElements();
@@ -49,6 +51,7 @@ function todoMain() {
         itemsPerPageSelectElem = document.getElementById("itemsPerPageSelectElem");
         peginationCtnr = document.querySelector(".pagination-pages");
         todoModelCloseBtn = document.getElementById("todo-model-close-btn");
+        launchPendingBtn = document.getElementById("launchPendingBtn");
 
     }
 
@@ -69,6 +72,7 @@ function todoMain() {
         peginationCtnr.addEventListener("click", onPaginationBtnsClick, false);
 
         itemsPerPageSelectElem.addEventListener("change", selectItemsPerPage, false);
+        launchPendingBtn.addEventListener("click", launchPendingTasks, false);
     }
 
     function addEntry(event) {
@@ -347,6 +351,7 @@ function todoMain() {
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
+            eventDisplay: "block",
             initialDate: new Date(), //'2024-05-07',
             headerToolbar: {
                 left: 'prev,next today',
@@ -381,6 +386,7 @@ function todoMain() {
         title: todo,
         start: time === "" ? date : `${date}T${time}`,
         color: done ? "#7a0000" : "#041421", // dark red when completed
+        classNames: done ? ["event-done"] : ["event-pending"],
       });
     }
 
@@ -782,7 +788,7 @@ function todoMain() {
       return { todayKey, lines };
     }
 
-    function sendMorningBriefingIfNeeded() {
+    function sendMorningBriefingIfNeeded(mode = "auto") {
       if (!("Notification" in window)) return;
       if (Notification.permission !== "granted") return;
 
@@ -791,19 +797,28 @@ function todoMain() {
       const lastSent = localStorage.getItem("todo-lastMorningBriefing");
       if (lastSent === todayKey) return;
 
-      new Notification("Daily Command Briefing", {
-        body:
-    `Good morning, High Commander. 
-    
-    It's time to reign. Today's tasks ready for execution!:
+      const header =
+      mode === "manual"
+        ? `High Commander — here is what is still pending for today:\n`
+        : `Good morning, High Commander.\n\nIt's time to reign.\n\n`;
 
+    new Notification("Daily Command Briefing", {
+      body:
+    `${header}
     ${lines.join("\n")}
 
     Execute with precision.`,
-        tag: "todo-daily-briefing",
-      });
+      tag: "todo-daily-briefing",
+    });
+
 
       localStorage.setItem("todo-lastMorningBriefing", todayKey);
+    }
+
+    function launchPendingTasks() {
+      // allow re-running the briefing on demand
+      localStorage.removeItem("todo-lastMorningBriefing");
+      sendMorningBriefingIfNeeded("manual");
     }
 
 }
