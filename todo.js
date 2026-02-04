@@ -799,6 +799,10 @@ function todoMain() {
 
       const { todayKey, lines } = buildTodaysAgendaLines();
 
+        console.log("Briefing key:", todayKey);
+        console.log("Briefing lines:", lines);
+
+
       const lastSent = localStorage.getItem("todo-lastMorningBriefing");
       if (lastSent === todayKey) return;
 
@@ -822,6 +826,11 @@ function todoMain() {
 
     function launchPendingTasks() {
       console.log("🚀 Launch Pending Tasks clicked");
+        new Notification("Launch Check", {
+          body: `Clicked at ${new Date().toLocaleTimeString()}`,
+          tag: `launch-check-${Date.now()}`,
+        });
+
       localStorage.removeItem("todo-lastMorningBriefing");
 
       if (!("Notification" in window)) return;
