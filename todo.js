@@ -811,25 +811,23 @@ function todoMain() {
         ? `High Commander — here is what is still pending for today:\n`
         : `Good morning, High Commander.\n\nIt's time to reign.\n\n`;
 
+    const notifTag =
+      mode === "manual" ? `todo-daily-briefing-manual-${Date.now()}` : "todo-daily-briefing";
+
     new Notification("Daily Command Briefing", {
-      body:
-    `${header}
+      body: `${header}
     ${lines.join("\n")}
 
     Execute with precision.`,
-      tag: "todo-daily-briefing",
+      tag: notifTag,
+        requireInteraction: true,
     });
-
 
       localStorage.setItem("todo-lastMorningBriefing", todayKey);
     }
 
     function launchPendingTasks() {
       console.log("🚀 Launch Pending Tasks clicked");
-        new Notification("Launch Check", {
-          body: `Clicked at ${new Date().toLocaleTimeString()}`,
-          tag: `launch-check-${Date.now()}`,
-        });
 
       localStorage.removeItem("todo-lastMorningBriefing");
 
