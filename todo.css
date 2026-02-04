@@ -66,6 +66,31 @@ h3 {
     font-style: normal;
 }
 
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.launch-btn {
+    background-color: #d1e0e0;
+    color: #153e31;
+    border: 3px outset #578c8e;
+    padding: 0.25rem 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.launch-btn:hover {
+    background-color: #94b8b8;
+}
+
+.launch-btn:active {
+    border: 1px inset #578c8e;
+}
+
 .todo-block {
     border: 1px solid #041421;
     padding: .5rem;
@@ -96,6 +121,25 @@ h3 {
         position: sticky;
         top: 0;
     }
+}
+
+/* FullCalendar premium event styling */
+.event-pending {
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+.event-done {
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.event-done .fc-event-title,
+.event-done .fc-event-time {
+  text-decoration: line-through;
 }
 
 .todo-overlay {
