@@ -793,6 +793,7 @@ function todoMain() {
     }
 
     function sendMorningBriefingIfNeeded(mode = "auto") {
+        console.log("Notification.permission:", Notification.permission, "mode:", mode);
       if (!("Notification" in window)) return;
       if (Notification.permission !== "granted") return;
 
@@ -820,10 +821,28 @@ function todoMain() {
     }
 
     function launchPendingTasks() {
-        console.log("🚀 Launch Pending Tasks clicked");
-      // allow re-running the briefing on demand
+      console.log("🚀 Launch Pending Tasks clicked");
       localStorage.removeItem("todo-lastMorningBriefing");
-      sendMorningBriefingIfNeeded("manual");
-    }
 
+      if (!("Notification" in window)) return;
+
+      if (Notification.permission === "granted") {
+        sendMorningBriefingIfNeeded("manual");
+        return;
+      }
+
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then((perm) => {
+          if (perm === "granted") {
+            sendMorningBriefingIfNeeded("manual");
+          } else {
+            alert("Notifications are blocked. Allow notifications to use Launch Pending Tasks.");
+          }
+        });
+        return;
+      }
+
+      // permission === "denied"
+      alert("Notifications are blocked. Enable them in browser site settings to use Launch Pending Tasks.");
+    }
 }
