@@ -52,6 +52,7 @@ function todoMain() {
         peginationCtnr = document.querySelector(".pagination-pages");
         todoModelCloseBtn = document.getElementById("todo-model-close-btn");
         launchPendingBtn = document.getElementById("launchPendingBtn");
+        console.log("launchPendingBtn:", launchPendingBtn);
 
     }
 
@@ -72,7 +73,10 @@ function todoMain() {
         peginationCtnr.addEventListener("click", onPaginationBtnsClick, false);
 
         itemsPerPageSelectElem.addEventListener("change", selectItemsPerPage, false);
-        launchPendingBtn.addEventListener("click", launchPendingTasks, false);
+        if (launchPendingBtn) {
+          launchPendingBtn.addEventListener("click", launchPendingTasks, false);
+        }
+
     }
 
     function addEntry(event) {
@@ -385,7 +389,7 @@ function todoMain() {
         id,
         title: todo,
         start: time === "" ? date : `${date}T${time}`,
-        color: done ? "#7a0000" : "#041421", // dark red when completed
+        color: done ? "#b23b3b" : "#2f3b3b", // dark red when completed
         classNames: done ? ["event-done"] : ["event-pending"],
       });
     }
@@ -816,6 +820,7 @@ function todoMain() {
     }
 
     function launchPendingTasks() {
+        console.log("🚀 Launch Pending Tasks clicked");
       // allow re-running the briefing on demand
       localStorage.removeItem("todo-lastMorningBriefing");
       sendMorningBriefingIfNeeded("manual");
