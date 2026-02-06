@@ -111,7 +111,26 @@
 
     </div>
 
+    <!-- Command Briefing Overlay -->
+    <div class="briefing-overlay" id="briefing-overlay">
+      <div class="briefing-modal" id="briefing-modal">
+        <div class="briefing-header">
+        <div>
+            <div class="briefing-title">Command Briefing</div>
+            <div class="briefing-subtitle" id="briefing-subtitle">Pending today: 0 • Completed: 0</div>
+        </div>
+
+          <button class="briefing-close-btn" id="briefing-close-btn" type="button" aria-label="Close briefing">
+            X
+          </button>
+        </div>
+
+        <div class="briefing-body" id="briefing-list">
+          <!-- Rows will be injected here by JS -->
+        </div>
+      </div>
+    </div>
+
     <script src="todo.js" defer></script>
 </body>
-
 </html>
