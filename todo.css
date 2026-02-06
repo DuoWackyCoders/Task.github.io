@@ -185,6 +185,148 @@ h3 {
     transition: transform 650ms;
 }
 
+
+/* =========================
+   Command Briefing Overlay
+   ========================= */
+
+.briefing-overlay {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(208, 214, 214, 0.9);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(-100vw);
+    transition: transform 250ms;
+    z-index: 3;
+}
+
+.briefing-slidedIntoView {
+    transform: translateX(0);
+    transition: transform 650ms;
+}
+
+.briefing-modal {
+    width: min(800px, 92vw);
+    max-height: 80vh;
+    overflow: auto;
+    background-color: #4c7273;
+    border: 1px solid #041421;
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.briefing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.briefing-title {
+    font-family: "Open Sans", sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #041421;
+}
+
+.briefing-subtitle {
+    margin-top: 0.25rem;
+    color: #153e31;
+    font-weight: 600;
+}
+
+.briefing-close-btn {
+    background-color: red;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.briefing-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* individual row */
+.briefing-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 140px 160px;
+    gap: 0.75rem;
+    align-items: center;
+    background-color: #d1e0e0;
+    border: 1px solid #041421;
+    border-radius: 12px;
+    padding: 0.6rem 0.75rem;
+}
+
+.briefing-time {
+    font-weight: 800;
+    color: #041421;
+}
+
+.briefing-task {
+    font-weight: 700;
+    color: #041421;
+}
+
+.briefing-category {
+    justify-self: start;
+    background-color: #94b8b8;
+    color: #041421;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.briefing-actions {
+    justify-self: end;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.briefing-action-btn {
+    background-color: #d1e0e0;
+    color: #153e31;
+    border: 2px outset #578c8e;
+    border-radius: 10px;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.briefing-action-btn:hover {
+    background-color: #94b8b8;
+}
+
+.briefing-action-btn:active {
+    border: 1px inset #578c8e;
+}
+
+/* empty state */
+.briefing-empty {
+    background-color: #d1e0e0;
+    border: 1px solid #041421;
+    border-radius: 12px;
+    padding: 0.75rem;
+    color: #041421;
+    font-weight: 700;
+}
+
+
+
 #todoTable tr:nth-child(even) {
     background-color: #d1e0e0;
 }
