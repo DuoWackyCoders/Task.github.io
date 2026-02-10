@@ -22,7 +22,12 @@ function todoMain() {
         itemsPerPageSelectElem,
         peginationCtnr,
         todoModelCloseBtn,
-        launchPendingBtn;
+        launchPendingBtn,
+        briefingOverlay,
+        briefingModal,
+        briefingCloseBtn,
+        briefingSubtitle,
+        briefingList;
 
 
 
@@ -54,6 +59,13 @@ function todoMain() {
         launchPendingBtn = document.getElementById("launchPendingBtn");
         console.log("launchPendingBtn:", launchPendingBtn);
 
+        briefingOverlay = document.getElementById("briefing-overlay");
+        briefingModal = document.getElementById("briefing-modal");
+        briefingCloseBtn = document.getElementById("briefing-close-btn");
+        briefingSubtitle = document.getElementById("briefing-subtitle");
+        briefingList = document.getElementById("briefing-list");
+
+
     }
 
     function addListeners() {
@@ -64,6 +76,14 @@ function todoMain() {
 
         todoModelCloseBtn.addEventListener("click", closeEditModelBox, false);
 
+        briefingCloseBtn.addEventListener("click", closeBriefing, false);
+
+        briefingOverlay.addEventListener("click", function (e) {
+          // close only when clicking the backdrop (not inside the modal)
+          if (e.target === briefingOverlay) closeBriefing();
+        }, false);
+
+
         changeBtn.addEventListener("click", commitEdit, false);
 
         todoTable.addEventListener("dragstart", onDragstart, false);
@@ -73,8 +93,9 @@ function todoMain() {
         peginationCtnr.addEventListener("click", onPaginationBtnsClick, false);
 
         itemsPerPageSelectElem.addEventListener("change", selectItemsPerPage, false);
+
         if (launchPendingBtn) {
-          launchPendingBtn.addEventListener("click", launchPendingTasks, false);
+          launchPendingBtn.addEventListener("click", openBriefing, false);
         }
 
     }
@@ -526,6 +547,16 @@ function todoMain() {
         document.getElementById("todo-overlay").classList.remove("slidedIntoView");
 
     }
+
+    function openBriefing() {
+      briefingOverlay.classList.add("briefing-slidedIntoView");
+      // content render comes in Step 4
+    }
+
+    function closeBriefing() {
+      briefingOverlay.classList.remove("briefing-slidedIntoView");
+    }
+
 
     function commitEdit(event) {
         closeEditModelBox();
