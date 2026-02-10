@@ -548,14 +548,49 @@ function todoMain() {
 
     }
 
-    function openBriefing() {
+   function openBriefing() {
+      renderBriefing();
       briefingOverlay.classList.add("briefing-slidedIntoView");
-      // content render comes in Step 4
     }
 
     function closeBriefing() {
       briefingOverlay.classList.remove("briefing-slidedIntoView");
     }
+
+    function renderBriefing() {
+  const { pendingToday, completedCount } = getTodayStats();
+
+  // subtitle
+  briefingSubtitle.innerText = `Pending today: ${pendingToday.length} • Completed: ${completedCount}`;
+
+  // clear list
+  briefingList.innerHTML = "";
+
+  // empty state
+  if (pendingToday.length === 0) {
+    briefingList.innerHTML = `<div class="briefing-empty">No pending tasks for today. Maintain momentum.</div>`;
+    return;
+  }
+
+  // render rows
+  pendingToday.forEach(t => {
+    const timeLabel = formatTimeHHMM(t.time);
+    const categoryLabel = t.category || "—";
+
+    briefingList.innerHTML += `
+      <div class="briefing-row" data-id="${t.id}">
+        <div class="briefing-time">${timeLabel}</div>
+        <div class="briefing-task">${t.todo}</div>
+        <div class="briefing-category">${categoryLabel}</div>
+        <div class="briefing-actions">
+          <button class="briefing-action-btn" type="button" data-action="done" data-id="${t.id}">✅ Done</button>
+          <button class="briefing-action-btn" type="button" data-action="edit" data-id="${t.id}">✏️ Edit</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
 
 
     function commitEdit(event) {
@@ -799,6 +834,34 @@ function todoMain() {
       const ampm = h >= 12 ? "PM" : "AM";
       return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
     }
+
+    function getTodayKey() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function getTodayStats() {
+      const todayKey = getTodayKey();
+
+      const todaysAll = todoList.filter(t => t.date === todayKey);
+
+      const pendingToday = todaysAll
+        .filter(t => !t.done)
+        .sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+
+      const completedToday = todaysAll.filter(t => t.done);
+
+      return {
+        todayKey,
+        pendingToday,
+        completedCount: completedToday.length,
+      };
+    }
+
+
 
     function buildTodaysAgendaLines() {
       const today = new Date();
