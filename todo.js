@@ -79,8 +79,8 @@ function todoMain() {
         shortlistBtn.addEventListener("change", multipleFilter, false);
 
         todoModelCloseBtn.addEventListener("click", closeEditModelBox, false);
-
-                if (briefingCloseBtn) {
+        
+        if (briefingCloseBtn) {
             briefingCloseBtn.addEventListener("click", closeBriefing, false);
         }
 
@@ -556,7 +556,6 @@ function todoMain() {
 
     function closeEditModelBox(event) {
         document.getElementById("todo-overlay").classList.remove("slidedIntoView");
-
     }
 
    function openBriefing() {
@@ -577,11 +576,31 @@ function todoMain() {
       // clear list
       briefingList.innerHTML = "";
 
-        // empty state
+      // empty state
       if (pendingToday.length === 0) {
-        briefingList.innerHTML = `<div class="briefing-empty">No pending tasks for today. Maintain momentum.</div>`;
-        return;
+      briefingList.innerHTML = `<div class="briefing-empty">No pending tasks for today. Maintain momentum.</div>`;
+      return;
     }
+
+    // render rows
+    pendingToday.forEach(t => {
+      const timeLabel = formatTimeHHMM(t.time);
+      const categoryLabel = t.category || "—";
+
+      briefingList.innerHTML += `
+        <div class="briefing-row" data-id="${t.id}">
+          <div class="briefing-time">${timeLabel}</div>
+          <div class="briefing-task">${t.todo}</div>
+          <div class="briefing-category">${categoryLabel}</div>
+          <div class="briefing-actions">
+            <button class="briefing-action-btn" type="button" data-action="done" data-id="${t.id}">✅ Done</button>
+            <button class="briefing-action-btn" type="button" data-action="edit" data-id="${t.id}">✏️ Edit</button>
+          </div>
+        </div>
+      `;
+    });
+    }
+
 
     function onBriefingListClick(e) {
       const btn = e.target.closest("button[data-action]");
@@ -604,44 +623,21 @@ function todoMain() {
     }
 
     function markTaskDoneFromBriefing(id) {
-  // update data model
-  for (let i = 0; i < todoList.length; i++) {
-    if (todoList[i].id === id) {
-      todoList[i].done = true;
-      break;
-    }
-  }
+      for (let i = 0; i < todoList.length; i++) {
+        if (todoList[i].id === id) {
+          todoList[i].done = true;
+          break;
+        }
+      }
 
-  // update calendar event color (same approach as checkbox)
-  const ev = calendar.getEventById(id);
+      const ev = calendar.getEventById(id);
       if (ev) {
         ev.setProp("color", "#7a0000");
       }
 
-      // persist + refresh UI
       save();
-      multipleFilter();   // rebuild table + calendar
-      renderBriefing();   // rebuild briefing list so the item disappears
-    }
-
-
-    // render rows
-    pendingToday.forEach(t => {
-        const timeLabel = formatTimeHHMM(t.time);
-        const categoryLabel = t.category || "—";
-    
-        briefingList.innerHTML += `
-          <div class="briefing-row" data-id="${t.id}">
-            <div class="briefing-time">${timeLabel}</div>
-            <div class="briefing-task">${t.todo}</div>
-            <div class="briefing-category">${categoryLabel}</div>
-            <div class="briefing-actions">
-              <button class="briefing-action-btn" type="button" data-action="done" data-id="${t.id}">✅ Done</button>
-              <button class="briefing-action-btn" type="button" data-action="edit" data-id="${t.id}">✏️ Edit</button>
-            </div>
-          </div>
-        `;
-      });
+      multipleFilter();
+      renderBriefing();
     }
 
 
