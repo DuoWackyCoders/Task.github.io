@@ -119,10 +119,15 @@ function todoMain() {
         }
 
         document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") {
+          if (
+            e.key === "Escape" &&
+            briefingOverlay &&
+            briefingOverlay.classList.contains("briefing-slidedIntoView")
+          ) {
             closeBriefing();
           }
         }, false);
+
     }
 
     function addEntry(event) {
