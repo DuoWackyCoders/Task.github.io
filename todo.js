@@ -1,5 +1,7 @@
 todoMain();
 
+// Start of js
+
 function todoMain() {
     const DEFAULT_OPTION = "Choose Category";
 
