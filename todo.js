@@ -65,6 +65,10 @@ function todoMain() {
         briefingSubtitle = document.getElementById("briefing-subtitle");
         briefingList = document.getElementById("briefing-list");
 
+        console.log("briefingOverlay:", briefingOverlay);
+        console.log("briefingCloseBtn:", briefingCloseBtn);
+        console.log("briefingList:", briefingList);
+        console.log("briefingSubtitle:", briefingSubtitle);
 
     }
 
@@ -76,14 +80,20 @@ function todoMain() {
 
         todoModelCloseBtn.addEventListener("click", closeEditModelBox, false);
 
-        briefingCloseBtn.addEventListener("click", closeBriefing, false);
+                if (briefingCloseBtn) {
+            briefingCloseBtn.addEventListener("click", closeBriefing, false);
+        }
 
-        briefingOverlay.addEventListener("click", function (e) {
-          // close only when clicking the backdrop (not inside the modal)
-          if (e.target === briefingOverlay) closeBriefing();
-        }, false);
+        if (briefingOverlay) {
+            briefingOverlay.addEventListener("click", function (e) {
+                if (e.target === briefingOverlay) closeBriefing();
+            }, false);
+        }
 
-        briefingList.addEventListener("click", onBriefingListClick, false);
+        if (briefingList) {
+            briefingList.addEventListener("click", onBriefingListClick, false);
+        }
+
 
         changeBtn.addEventListener("click", commitEdit, false);
 
