@@ -40,14 +40,6 @@ td {
     cursor: pointer;
 }
 
-/* ::-ms-input-placeholder {
-    color: #183c31;
-}
-
-::-webkit-input-placeholder {
-    color: #183c31;
-} */
-
 ::placeholder {
     color: #578c8e;
 }
