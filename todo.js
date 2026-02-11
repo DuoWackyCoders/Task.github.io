@@ -26,6 +26,7 @@ function todoMain() {
         briefingOverlay,
         briefingModal,
         briefingCloseBtn,
+        briefingFooterCloseBtn,
         briefingSubtitle,
         briefingList;
 
@@ -62,6 +63,7 @@ function todoMain() {
         briefingOverlay = document.getElementById("briefing-overlay");
         briefingModal = document.getElementById("briefing-modal");
         briefingCloseBtn = document.getElementById("briefing-close-btn");
+        briefingFooterCloseBtn = document.getElementById("briefing-footer-close-btn");
         briefingSubtitle = document.getElementById("briefing-subtitle");
         briefingList = document.getElementById("briefing-list");
 
@@ -83,6 +85,11 @@ function todoMain() {
         if (briefingCloseBtn) {
             briefingCloseBtn.addEventListener("click", closeBriefing, false);
         }
+
+        if (briefingFooterCloseBtn) {
+          briefingFooterCloseBtn.addEventListener("click", closeBriefing, false);
+        }
+
 
         if (briefingOverlay) {
             briefingOverlay.addEventListener("click", function (e) {
@@ -109,6 +116,11 @@ function todoMain() {
           launchPendingBtn.addEventListener("click", openBriefing, false);
         }
 
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            closeBriefing();
+          }
+        }, false);
     }
 
     function addEntry(event) {
@@ -255,9 +267,13 @@ function todoMain() {
         // edit cell
         let editSpan = document.createElement("span");
         editSpan.innerText = "edit";
-        editSpan.className = "material-icons";
+        editSpan.className = "material-symbols-outlined";
+        editSpan.setAttribute("title", "Edit");
+        editSpan.setAttribute("aria-label", "Edit");
+        editSpan.style.cursor = "pointer";
         editSpan.addEventListener("click", toEditItem, false);
         editSpan.dataset.id = id;
+        
         let editTd = document.createElement("td");
         editTd.appendChild(editSpan);
         trElem.appendChild(editTd);
@@ -265,9 +281,13 @@ function todoMain() {
         //delete cell
         let spanElem = document.createElement("span");
         spanElem.innerText = "delete";
-        spanElem.className = "material-icons";
+        spanElem.className = "material-symbols-outlined";
+        spanElem.setAttribute("title", "Delete");
+        spanElem.setAttribute("aria-label", "Delete");
+        spanElem.style.cursor = "pointer";
         spanElem.addEventListener("click", deleteItem, false);
         spanElem.dataset.id = id;
+        
         let tdElem4 = document.createElement("td");
         tdElem4.appendChild(spanElem);
         trElem.appendChild(tdElem4);
