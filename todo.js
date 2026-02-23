@@ -8,6 +8,8 @@ function todoMain() {
     let inputElem,
         inputElem2,
         dateInput,
+        setTodayBtn,
+        setTomorrowBtn,
         timeInput,
         addButton,
         sortButton,
@@ -19,7 +21,7 @@ function todoMain() {
         todoTable,
         draggingElement,
         currentPage = 1,
-        itemsPerPage = Number.parseInt(localStorage.getItem("todo-itemsPerPage")) || 5,
+        itemsPerPage = Number.parseInt(localStorage.getItem("todo-itemsPerPage")) || 15,
         totalPages = 0,
         itemsPerPageSelectElem,
         peginationCtnr,
@@ -38,6 +40,7 @@ function todoMain() {
     addListeners();
     initCalendar();
     load();
+    defaultDateToTodayIfEmpty();
     clearTable();                  // ✅ ensure calendar/table start clean
     requestNotifPermission();
     sendMorningBriefingIfNeeded();
@@ -49,6 +52,8 @@ function todoMain() {
         inputElem = document.getElementById("todoInput");
         inputElem2 = document.getElementById("categoryInput");
         dateInput = document.getElementById("dateInput");
+        setTodayBtn = document.getElementById("setTodayBtn");
+        setTomorrowBtn = document.getElementById("setTomorrowBtn");
         timeInput = document.getElementById("timeInput");
         addButton = document.getElementById("addBtn");
         sortButton = document.getElementById("sortBtn");
@@ -77,6 +82,14 @@ function todoMain() {
     }
 
     function addListeners() {
+        if (setTodayBtn) {
+            setTodayBtn.addEventListener("click", setDateToToday, false);
+        }
+
+        if (setTomorrowBtn) {
+            setTomorrowBtn.addEventListener("click", setDateToNextBusinessDay, false);
+        }
+
         addButton.addEventListener("click", addEntry, false);
         sortButton.addEventListener("click", sortEntry, false);
         selectElem.addEventListener("change", multipleFilter, false);
@@ -897,6 +910,41 @@ function todoMain() {
       const dd = String(today.getDate()).padStart(2, "0");
       return `${yyyy}-${mm}-${dd}`;
     }
+
+    function defaultDateToTodayIfEmpty() {
+      if (!dateInput) return;
+      if (!dateInput.value) {
+        dateInput.value = getTodayKey();
+      }
+    }
+
+
+    function setDateToToday() {
+      if (!dateInput) return;
+      dateInput.value = getTodayKey();
+    }
+    
+    function setDateToNextBusinessDay() {
+      if (!dateInput) return;
+
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+
+      // 0=Sun, 6=Sat
+      const day = d.getDay();
+      if (day === 6) {        // Saturday -> Monday
+        d.setDate(d.getDate() + 2);
+      } else if (day === 0) { // Sunday -> Monday
+        d.setDate(d.getDate() + 1);
+      }
+
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+
+      dateInput.value = `${yyyy}-${mm}-${dd}`;
+    }
+
 
     function getTodayStats() {
       const todayKey = getTodayKey();
