@@ -23,6 +23,20 @@ td {
     gap: 0.5rem;
 }
 
+.date-quickpick {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.quickpick-btn {
+  padding: 0.35rem 0.7rem;
+  border-radius: 10px;
+  border: 2px solid rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+
 .todoTable-block {
     margin-top: 1rem;
 }
