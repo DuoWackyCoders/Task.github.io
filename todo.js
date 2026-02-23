@@ -697,30 +697,9 @@ function todoMain() {
         }
 
         save();
+        
+        multipleFilter(); // ✅ rebuild table + calendar view correctly under pagination/filter
 
-        // Update the table
-        //let tdNodeList = todoTable.querySelectorAll("td");
-        //let tdNodeList = todoTable.querySelectorAll("td[data-id='" + id + "']");
-        let tdNodeList = todoTable.querySelectorAll("td[data-id='" + id + "']");
-        for (let i = 0; i < tdNodeList.length; i++) {
-            //if (tdNodeList[i].dataset.id == id) {
-            let type = tdNodeList[i].dataset.type;
-            switch (type) {
-                case "date":
-                    tdNodeList[i].innerText = formatDate(date);
-                    break
-                case "time":
-                    tdNodeList[i].innerText = time;
-                    break;
-                case "todo":
-                    tdNodeList[i].innerText = todo;
-                    break;
-                case "category":
-                    tdNodeList[i].innerText = category;
-                    break;
-            }
-            //}
-        }
     }
 
     function toEditItem(event) {
