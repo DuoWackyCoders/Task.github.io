@@ -167,15 +167,14 @@ function todoMain() {
             done: false,
         };
 
-        renderRow(obj);
-
         todoList.push(obj);
 
         save();
 
         updateSelectOptions();
 
-        addEvent(obj);
+        // ✅ rebuild list/calendar using your current filter + “Incomplete First”
+        multipleFilter();
     }
 
     function updateSelectOptions() {
@@ -217,7 +216,14 @@ function todoMain() {
         if (todoList == null)
             todoList = [];
 
-        itemsPerPageSelectElem.value = itemsPerPage;
+        // set the dropdown; if missing option, fall back to 15
+        itemsPerPageSelectElem.value = String(itemsPerPage);
+        if (itemsPerPageSelectElem.value !== String(itemsPerPage)) {
+          itemsPerPage = 15;
+          itemsPerPageSelectElem.value = "15";
+          localStorage.setItem("todo-itemsPerPage", "15");
+        }
+
     }
 
     function renderRows(arr) {
