@@ -42,8 +42,8 @@ function todoMain() {
     load();
     defaultDateToTodayIfEmpty();
     clearTable();                  // ✅ ensure calendar/table start clean
-    requestNotifPermission();
-    sendMorningBriefingIfNeeded();
+    // requestNotifPermission();     // (A4 cleanup) OS notifications disabled
+    // sendMorningBriefingIfNeeded(); // (A4 cleanup) OS notifications disabled
     renderRows(todoList);
     updateSelectOptions();
 
@@ -373,10 +373,16 @@ function todoMain() {
           }
 
           // update calendar event color
-          const ev = calendar.getEventById(id);
+          //const ev = calendar.getEventById(id);
+            //if (ev) {
+              //ev.setProp("color", this.checked ? "#7a0000" : "#041421");
+            //}
+
+            const ev = calendar.getEventById(id);
             if (ev) {
-              ev.setProp("color", this.checked ? "#7a0000" : "#041421");
+              ev.setProp("classNames", this.checked ? ["event-done"] : ["event-pending"]);
             }
+            // - Upto here
 
           save();
           multipleFilter();
@@ -462,12 +468,22 @@ function todoMain() {
         calendar.render();
     }
 
+    // - Replacing this with non color to test and remove after if I like.
+    // function addEvent({ id, todo, date, time, done }) {
+      //calendar.addEvent({
+        //id,
+        //title: todo,
+        //start: time === "" ? date : `${date}T${time}`,
+        //color: done ? "#b23b3b" : "#2f3b3b", // dark red when completed
+        //classNames: done ? ["event-done"] : ["event-pending"],
+      //});
+    //}
+
     function addEvent({ id, todo, date, time, done }) {
       calendar.addEvent({
         id,
         title: todo,
         start: time === "" ? date : `${date}T${time}`,
-        color: done ? "#b23b3b" : "#2f3b3b", // dark red when completed
         classNames: done ? ["event-done"] : ["event-pending"],
       });
     }
@@ -902,12 +918,12 @@ function todoMain() {
         multipleFilter();
     }
 
-    function requestNotifPermission() {
-      if (!("Notification" in window)) return;
-      if (Notification.permission === "default") {
-        Notification.requestPermission().then(() => sendMorningBriefingIfNeeded());
-      }
-    }
+    //function requestNotifPermission() {
+      //if (!("Notification" in window)) return;
+      //if (Notification.permission === "default") {
+        //Notification.requestPermission().then(() => sendMorningBriefingIfNeeded());
+      //}
+    //}
 
     function formatTimeHHMM(t) {
       if (!t) return "—";
@@ -1003,64 +1019,64 @@ function todoMain() {
       return { todayKey, lines };
     }
 
-    function sendMorningBriefingIfNeeded(mode = "auto") {
-        console.log("Notification.permission:", Notification.permission, "mode:", mode);
-      if (!("Notification" in window)) return;
-      if (Notification.permission !== "granted") return;
+    //function sendMorningBriefingIfNeeded(mode = "auto") {
+        //console.log("Notification.permission:", Notification.permission, "mode:", mode);
+      //if (!("Notification" in window)) return;
+      //if (Notification.permission !== "granted") return;
 
-      const { todayKey, lines } = buildTodaysAgendaLines();
+      //const { todayKey, lines } = buildTodaysAgendaLines();
 
-        console.log("Briefing key:", todayKey);
-        console.log("Briefing lines:", lines);
+        //console.log("Briefing key:", todayKey);
+        //console.log("Briefing lines:", lines);
 
 
-      const lastSent = localStorage.getItem("todo-lastMorningBriefing");
-      if (lastSent === todayKey) return;
+      //const lastSent = localStorage.getItem("todo-lastMorningBriefing");
+      //if (lastSent === todayKey) return;
 
-      const header =
-      mode === "manual"
-        ? `High Commander — here is what is still pending for today:\n`
-        : `Good morning, High Commander.\n\nIt's time to reign.\n\n`;
+      //const header =
+      //mode === "manual"
+        //? `High Commander — here is what is still pending for today:\n`
+      //  : `Good morning, High Commander.\n\nIt's time to reign.\n\n`;
 
-    const notifTag =
-      mode === "manual" ? `todo-daily-briefing-manual-${Date.now()}` : "todo-daily-briefing";
+    //const notifTag =
+      //mode === "manual" ? `todo-daily-briefing-manual-${Date.now()}` : "todo-daily-briefing";
 
-    new Notification("Daily Command Briefing", {
-      body: `${header}
-    ${lines.join("\n")}
+    //new Notification("Daily Command Briefing", {
+      //body: `${header}
+    //${lines.join("\n")}
 
-    Execute with precision.`,
-      tag: notifTag,
-        requireInteraction: true,
-    });
+    //Execute with precision.`,
+      //tag: notifTag,
+        //requireInteraction: true,
+   // });
 
-      localStorage.setItem("todo-lastMorningBriefing", todayKey);
-    }
+     // localStorage.setItem("todo-lastMorningBriefing", todayKey);
+    //}
 
-    function launchPendingTasks() {
-      console.log("🚀 Launch Pending Tasks clicked");
+  //  function launchPendingTasks() {
+    //  console.log("🚀 Launch Pending Tasks clicked");
 
-      localStorage.removeItem("todo-lastMorningBriefing");
+    //  localStorage.removeItem("todo-lastMorningBriefing");
 
-      if (!("Notification" in window)) return;
+    //  if (!("Notification" in window)) return;
 
-      if (Notification.permission === "granted") {
-        sendMorningBriefingIfNeeded("manual");
-        return;
-      }
+   //   if (Notification.permission === "granted") {
+    //    sendMorningBriefingIfNeeded("manual");
+      //  return;
+    //  }
 
-      if (Notification.permission === "default") {
-        Notification.requestPermission().then((perm) => {
-          if (perm === "granted") {
-            sendMorningBriefingIfNeeded("manual");
-          } else {
-            alert("Notifications are blocked. Allow notifications to use Launch Pending Tasks.");
-          }
-        });
-        return;
-      }
+     // if (Notification.permission === "default") {
+     //   Notification.requestPermission().then((perm) => {
+       //   if (perm === "granted") {
+          //  sendMorningBriefingIfNeeded("manual");
+         // } else {
+         //   alert("Notifications are blocked. Allow notifications to use Launch Pending Tasks.");
+        //  }
+       // });
+       // return;
+     // }
 
       // permission === "denied"
-      alert("Notifications are blocked. Enable them in browser site settings to use Launch Pending Tasks.");
-    }
+      //alert("Notifications are blocked. Enable them in browser site settings to use Launch Pending Tasks.");
+    //}
 }
