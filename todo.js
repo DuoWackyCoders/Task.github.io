@@ -614,6 +614,8 @@ function todoMain() {
     }
 
     function renderBriefing() {
+        if (!briefingSubtitle || !briefingList) return;
+        
       const { pendingToday, completedCount } = getTodayStats();
 
         // subtitle
@@ -669,22 +671,28 @@ function todoMain() {
     }
 
     function markTaskDoneFromBriefing(id) {
+      // 1) Update data model
+      let changed = false;
       for (let i = 0; i < todoList.length; i++) {
         if (todoList[i].id === id) {
+          if (todoList[i].done) return; // already done
           todoList[i].done = true;
+          changed = true;
           break;
         }
       }
+      if (!changed) return;
 
-      const ev = calendar.getEventById(id);
-      if (ev) {
-        ev.setProp("color", "#7a0000");
-      }
-
+      // 2) Persist
       save();
+
+      // 3) Rebuild UI from the model (table + calendar) using your current filter + pagination
       multipleFilter();
+
+      // 4) Rebuild briefing (counts + list)
       renderBriefing();
     }
+
 
 
 
