@@ -145,7 +145,7 @@ h3 {
 
 /* Done = muted burgundy + strike */
 .event-done {
-  background: #445252 !important;
+  background: #7a0000 !important;
   border: 1px solid rgba(0,0,0,0.2) !important;
   opacity: 0.8;
 }
