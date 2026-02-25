@@ -179,6 +179,15 @@ h3 {
   color: #153e31;
 }
 
+.todo-edit-actions {
+  grid-column: 1 / -1;      /* span full width of grid */
+  display: flex;
+  justify-content: flex-end; /* push to right */
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
 .todo-edit-done input[type="checkbox"] {
   transform: scale(1.1);
   cursor: pointer;
