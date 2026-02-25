@@ -180,12 +180,16 @@ h3 {
 }
 
 .todo-edit-actions {
-  grid-column: 1 / -1;      /* span full width of grid */
+  grid-column: 2;                 /* lock to right column only */
   display: flex;
-  justify-content: flex-end; /* push to right */
-  align-items: center;
-  gap: 1rem;
-  margin-top: 0.75rem;
+  flex-direction: column;         /* stack checkbox and button */
+  align-items: flex-start;        /* align to left edge of right column */
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.todo-edit-actions button {
+  width: 100%;                    /* match width of input above */
 }
 
 .todo-edit-done input[type="checkbox"] {
