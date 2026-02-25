@@ -145,7 +145,7 @@ h3 {
 
 /* Done = muted burgundy + strike */
 .event-done {
-  background: #5f262c !important;
+  background: #543630 !important;
   border: 1px solid rgba(0,0,0,0.2) !important;
   opacity: 0.8;
 }
@@ -171,6 +171,18 @@ h3 {
     z-index: 2;
 }
 
+.todo-edit-done {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #153e31;
+}
+
+.todo-edit-done input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
+}
 
 .todo-model {
     width: 50vw;
