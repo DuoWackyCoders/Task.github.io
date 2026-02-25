@@ -32,7 +32,8 @@ function todoMain() {
         briefingCloseBtn,
         briefingFooterCloseBtn,
         briefingSubtitle,
-        briefingList;
+        briefingList,
+        todoEditDoneCheckbox;
 
 
 
@@ -73,6 +74,7 @@ function todoMain() {
         briefingFooterCloseBtn = document.getElementById("briefing-footer-close-btn");
         briefingSubtitle = document.getElementById("briefing-subtitle");
         briefingList = document.getElementById("briefing-list");
+        todoEditDoneCheckbox = document.getElementById("todo-edit-done");
 
         console.log("briefingOverlay:", briefingOverlay);
         console.log("briefingCloseBtn:", briefingCloseBtn);
@@ -720,9 +722,11 @@ function todoMain() {
         let category = document.getElementById("todo-edit-category").value;
         let date = document.getElementById("todo-edit-date").value;
         let time = document.getElementById("todo-edit-time").value;
+        let done = todoEditDoneCheckbox ? todoEditDoneCheckbox.checked : false;
 
         // remove from calendar
-        calendar.getEventById(id).remove();
+        const ev = calendar.getEventById(id);
+        if (ev) ev.remove();
 
         for (let i = 0; i < todoList.length; i++) {
             if (todoList[i].id == id) {
@@ -732,17 +736,20 @@ function todoMain() {
                     category: category,
                     date: date,
                     time: time,
-                    done: todoList[i].done,
+                    done: done,
                 };
 
                 addEvent(todoList[i]);
+                break;
             }
         }
 
         save();
-        
         multipleFilter(); // ✅ rebuild table + calendar view correctly under pagination/filter
 
+        if (briefingOverlay && briefingOverlay.classList.contains("briefing-slidedIntoView")) {
+          renderBriefing();
+        }
     }
 
     function toEditItem(event) {
@@ -760,12 +767,19 @@ function todoMain() {
 
     function preFillEditForm(id) {
         let result = todoList.find(todoObj => todoObj.id == id);
-        let { todo, category, date, time } = result;
+        if (!result) return;
+
+        let { todo, category, date, time, done } = result;
 
         document.getElementById("todo-edit-todo").value = todo;
         document.getElementById("todo-edit-category").value = category;
         document.getElementById("todo-edit-date").value = date;
         document.getElementById("todo-edit-time").value = time;
+
+        // NEW: prefill completed checkbox
+        if (todoEditDoneCheckbox) {
+          todoEditDoneCheckbox.checked = !!done;
+        }
 
         changeBtn.dataset.id = id;
     }
