@@ -145,10 +145,9 @@ h3 {
 
 /* Done = muted burgundy + strike */
 .event-done {
-  background: #5a1e2a !important;
-  border: 1px solid rgba(255,255,255,0.15) !important;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
-  opacity: 0.95;
+  background: #445252 !important;
+  border: 1px solid rgba(0,0,0,0.2) !important;
+  opacity: 0.8;
 }
 
 .event-done .fc-event-title,
