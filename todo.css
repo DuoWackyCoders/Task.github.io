@@ -36,6 +36,75 @@ td {
   cursor: pointer;
 }
 
+/* Quick Time Picker */
+.quicktime {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.8fr;
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.quicktime-col {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(0,0,0,0.18);
+  border-radius: 12px;
+  padding: 0.55rem;
+}
+
+.quicktime-label {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  color: #041421;
+}
+
+.quicktime-grid {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.quicktime-grid-hours {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.quicktime-grid-minutes {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.quicktime-grid-ampm {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.quicktime-btn {
+  padding: 0.35rem 0.55rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  border: 2px outset #578c8e;
+  background-color: #d1e0e0;
+  color: #153e31;
+}
+
+.quicktime-btn:hover {
+  background-color: #94b8b8;
+}
+
+.quicktime-btn:active {
+  border: 1px inset #578c8e;
+}
+
+/* Active selection */
+.quicktime-btn.is-active {
+  outline: 2px solid rgba(4,20,33,0.55);
+  outline-offset: 1px;
+}
+
+.quicktime-preview {
+  grid-column: 1 / -1;
+  font-weight: 700;
+  color: #153e31;
+  padding-top: 0.15rem;
+}
+
 
 .todoTable-block {
     margin-top: 1rem;
