@@ -50,8 +50,52 @@
                     <input type="date" id="dateInput">
                 </div>
 
-                <Span>Time: </Span>
-                <input type="time" id="timeInput">
+               <Span>Time: </Span>
+
+               <!-- Quick Time Picker (NEW) -->
+               <div class="quicktime" id="quickTimePicker">
+                   <div class="quicktime-col">
+                       <div class="quicktime-label">Hour</div>
+                       <div class="quicktime-grid quicktime-grid-hours">
+                          <button type="button" class="quicktime-btn" data-hour="1">1</button>
+                          <button type="button" class="quicktime-btn" data-hour="2">2</button>
+                          <button type="button" class="quicktime-btn" data-hour="3">3</button>
+                          <button type="button" class="quicktime-btn" data-hour="4">4</button>
+                          <button type="button" class="quicktime-btn" data-hour="5">5</button>
+                          <button type="button" class="quicktime-btn" data-hour="6">6</button>
+                          <button type="button" class="quicktime-btn" data-hour="7">7</button>
+                          <button type="button" class="quicktime-btn" data-hour="8">8</button>
+                          <button type="button" class="quicktime-btn" data-hour="9">9</button>
+                          <button type="button" class="quicktime-btn" data-hour="10">10</button>
+                          <button type="button" class="quicktime-btn" data-hour="11">11</button>
+                          <button type="button" class="quicktime-btn" data-hour="12">12</button>
+                        </div>
+                      </div>
+
+                      <div class="quicktime-col">
+                        <div class="quicktime-label">Minute</div>
+                        <div class="quicktime-grid quicktime-grid-minutes">
+                          <button type="button" class="quicktime-btn" data-minute="00">00</button>
+                          <button type="button" class="quicktime-btn" data-minute="15">15</button>
+                          <button type="button" class="quicktime-btn" data-minute="30">30</button>
+                          <button type="button" class="quicktime-btn" data-minute="45">45</button>
+                        </div>
+                      </div>
+
+                      <div class="quicktime-col">
+                        <div class="quicktime-label">AM / PM</div>
+                        <div class="quicktime-grid quicktime-grid-ampm">
+                          <button type="button" class="quicktime-btn" data-ampm="AM">AM</button>
+                          <button type="button" class="quicktime-btn" data-ampm="PM">PM</button>
+                        </div>
+                      </div>
+
+                      <div class="quicktime-preview" id="quickTimePreview">Set: —</div>
+                    </div>
+
+                    <!-- Native time input stays (fallback) -->
+                    <input type="time" id="timeInput">
+                
                 <span></span>
                 <button id="addBtn">Add</button>
                 <span></span>
