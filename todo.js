@@ -18,6 +18,11 @@ function todoMain() {
         calendar,
         shortlistBtn,
         changeBtn,
+        quickTimePicker,
+        quickTimePreview,
+        selectedHour12 = null,
+        selectedMinute = null,
+        selectedAmPm = null,
         todoTable,
         draggingElement,
         currentPage = 1,
@@ -68,6 +73,9 @@ function todoMain() {
         launchPendingBtn = document.getElementById("launchPendingBtn");
         console.log("launchPendingBtn:", launchPendingBtn);
 
+        quickTimePicker = document.getElementById("quickTimePicker");
+        quickTimePreview = document.getElementById("quickTimePreview");
+
         briefingOverlay = document.getElementById("briefing-overlay");
         briefingModal = document.getElementById("briefing-modal");
         briefingCloseBtn = document.getElementById("briefing-close-btn");
@@ -112,6 +120,10 @@ function todoMain() {
             briefingOverlay.addEventListener("click", function (e) {
                 if (e.target === briefingOverlay) closeBriefing();
             }, false);
+        }
+
+        if (quickTimePicker) {
+          quickTimePicker.addEventListener("click", onQuickTimePickerClick, false);
         }
 
         if (briefingList) {
@@ -667,6 +679,58 @@ function todoMain() {
     });
     }
 
+    function onQuickTimePickerClick(e) {
+      const btn = e.target.closest("button.quicktime-btn");
+      if (!btn) return;
+
+      // hour
+      if (btn.dataset.hour) {
+        selectedHour12 = Number(btn.dataset.hour);
+        setActiveButton("[data-hour]", btn);
+      }
+
+      // minute
+      if (btn.dataset.minute) {
+        selectedMinute = btn.dataset.minute;
+        setActiveButton("[data-minute]", btn);
+      }
+
+      // am/pm
+      if (btn.dataset.ampm) {
+        selectedAmPm = btn.dataset.ampm;
+        setActiveButton("[data-ampm]", btn);
+      }
+
+      updateTimeInputFromQuickPicker();
+    }
+
+    function setActiveButton(selectorPrefix, activeBtn) {
+      // Clear active state within the picker for that group
+      if (!quickTimePicker) return;
+      const groupButtons = quickTimePicker.querySelectorAll(`button.quicktime-btn${selectorPrefix ? selectorPrefix : ""}`);
+      groupButtons.forEach(b => b.classList.remove("is-active"));
+      activeBtn.classList.add("is-active");
+    }
+
+    function updateTimeInputFromQuickPicker() {
+      // Only write when all 3 selected
+      if (!timeInput || !quickTimePreview) return;
+
+      if (!selectedHour12 || !selectedMinute || !selectedAmPm) {
+        quickTimePreview.innerText = "Set: —";
+        return;
+      }
+
+      // Convert 12h -> 24h
+      let hour24 = selectedHour12 % 12; // 12 -> 0
+      if (selectedAmPm === "PM") hour24 += 12;
+
+      const hh = String(hour24).padStart(2, "0");
+      const mm = String(selectedMinute).padStart(2, "0");
+
+      timeInput.value = `${hh}:${mm}`;
+      quickTimePreview.innerText = `Set: ${selectedHour12}:${mm} ${selectedAmPm}`;
+    }
 
     function onBriefingListClick(e) {
       const btn = e.target.closest("button[data-action]");
