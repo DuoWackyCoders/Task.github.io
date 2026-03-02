@@ -36,6 +36,13 @@ td {
   cursor: pointer;
 }
 
+/* Keep quick time + native time in the RIGHT column under Time: */
+.time-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
 /* Quick Time Picker */
 .quicktime {
   display: grid;
