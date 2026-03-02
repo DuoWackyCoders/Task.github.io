@@ -290,7 +290,7 @@ function todoMain() {
 
         //time cell
         let timeElem = document.createElement("td");
-        timeElem.innerText = time;
+        timeElem.innerText = formatTimeForTable(time);
         trElem.appendChild(timeElem);
 
         //to-do cell
@@ -728,8 +728,8 @@ function todoMain() {
       const hh = String(hour24).padStart(2, "0");
       const mm = String(selectedMinute).padStart(2, "0");
 
-      timeInput.value = `${hh}:${mm}`;
-      quickTimePreview.innerText = `Set: ${selectedHour12}:${mm} ${selectedAmPm}`;
+      timeInput.value = `${hh}:${mm}`; // must stay 24h for <input type="time">
+      quickTimePreview.innerText = `Set: ${selectedHour12}:${mm} ${selectedAmPm}`; // user-facing
     }
 
     function onBriefingListClick(e) {
@@ -1009,6 +1009,11 @@ function todoMain() {
       const hour12 = ((h + 11) % 12) + 1;
       const ampm = h >= 12 ? "PM" : "AM";
       return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
+    }
+
+    function formatTimeForTable(t) {
+      if (!t) return "";          // table should be blank if no time
+      return formatTimeHHMM(t);   // your existing formatter => "10:30 PM"
     }
 
     function getTodayKey() {
