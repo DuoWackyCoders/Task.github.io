@@ -171,6 +171,8 @@ function todoMain() {
         let timeValue = timeInput.value;
         timeInput.value = "";
 
+        resetQuickTimePicker();
+
         let obj = {
             // A comma is used to seperate the properties
             id: _uuid(),
@@ -534,77 +536,6 @@ function todoMain() {
         }
     }
 
-    function onTableClicked(event) {
-        if (event.target.matches("td") && event.target.dataset.editable == "true") {
-            let tempInputElem;
-            switch (event.target.dataset.type) {
-                case "date":
-                    tempInputElem = document.createElement("input");
-                    tempInputElem.type = "date";
-                    tempInputElem.value = event.target.dataset.value;
-                    break;
-                case "time":
-                    tempInputElem = document.createElement("input");
-                    tempInputElem.type = "time";
-                    tempInputElem.value = event.target.innerText;
-                    break;
-                case "todo":
-                case "category":
-                    tempInputElem = document.createElement("input");
-                    tempInputElem.value = event.target.innerText;
-
-                    break;
-                default:
-            }
-            event.target.innerText = "";
-            event.target.appendChild(tempInputElem);
-
-            tempInputElem.addEventListener("change", onChange, false);
-        }
-
-        function onChange(event) {
-            let changedValue = event.target.value;
-            let id = event.target.parentNode.dataset.id;
-            let type = event.target.parentNode.dataset.type;
-
-            // remove from calendar
-            calendar.getEventById(id).remove();
-
-            todoList.forEach(todoObj => {
-                if (todoObj.id == id) {
-                    //todoObj.todo = changedValue;
-                    todoObj[type] = changedValue;
-
-                    addEvent({
-                        id: id,
-                        title: todoObj.todo,
-                        start: todoObj.date,
-                    });
-                }
-            });
-            save();
-
-            if (type == "date") {
-                event.target.parentNode.innerText = formatDate(changedValue);
-            } else {
-                event.target.parentNode.innerText = changedValue;
-            }
-
-        }
-    }
-
-    function formatDate(date) {
-        let dateObj = new Date(date);
-        console.log(dateObj);
-        let formattedDate = dateObj.toLocaleString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-            timeZone: "America/Chicago",
-        });
-        return formattedDate;
-    }
-
     function showEditModelBox(event) {
         document.getElementById("todo-overlay").classList.add("slidedIntoView");
     }
@@ -709,6 +640,20 @@ function todoMain() {
 
       timeInput.value = `${hh}:${mm}`; // must stay 24h for <input type="time">
       quickTimePreview.innerText = `Set: ${selectedHour12}:${mm} ${selectedAmPm}`; // user-facing
+    }
+
+    function resetQuickTimePicker() {
+      selectedHour12 = null;
+      selectedMinute = null;
+      selectedAmPm = null;
+
+      if (quickTimePicker) {
+        quickTimePicker.querySelectorAll(".quicktime-btn.is-active").forEach(b => b.classList.remove("is-active"));
+      }
+
+      if (quickTimePreview) {
+        quickTimePreview.innerText = "Set: —";
+      }
     }
 
     function onBriefingListClick(e) {
