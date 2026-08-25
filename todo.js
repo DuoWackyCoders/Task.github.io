@@ -32,6 +32,7 @@ function todoMain() {
         peginationCtnr,
         todoModelCloseBtn,
         launchPendingBtn,
+        themeToggleBtn,
         briefingOverlay,
         briefingModal,
         briefingCloseBtn,
@@ -43,6 +44,7 @@ function todoMain() {
 
 
     getElements();
+    applyStoredTheme();
     addListeners();
     initCalendar();
     load();
@@ -72,6 +74,8 @@ function todoMain() {
         todoModelCloseBtn = document.getElementById("todo-model-close-btn");
         launchPendingBtn = document.getElementById("launchPendingBtn");
         console.log("launchPendingBtn:", launchPendingBtn);
+
+        themeToggleBtn = document.getElementById("themeToggleBtn");
 
         quickTimePicker = document.getElementById("quickTimePicker");
         quickTimePreview = document.getElementById("quickTimePreview");
@@ -145,6 +149,10 @@ function todoMain() {
           launchPendingBtn.addEventListener("click", openBriefing, false);
         }
 
+        if (themeToggleBtn) {
+          themeToggleBtn.addEventListener("click", toggleTheme, false);
+        }
+
         document.addEventListener("keydown", function (e) {
           if (
             e.key === "Escape" &&
@@ -155,6 +163,25 @@ function todoMain() {
           }
         }, false);
 
+    }
+
+    function applyStoredTheme() {
+      const stored = localStorage.getItem("tsk-theme");
+      const theme = stored === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", theme);
+      if (themeToggleBtn) {
+        themeToggleBtn.innerText = theme === "dark" ? "☀️" : "🌙";
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("tsk-theme", next);
+      if (themeToggleBtn) {
+        themeToggleBtn.innerText = next === "dark" ? "☀️" : "🌙";
+      }
     }
 
     function addEntry(event) {
