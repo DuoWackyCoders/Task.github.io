@@ -424,28 +424,7 @@ function todoMain() {
 
         save();
 
-        clearTable();
-
-        // let table = document.getElementById("todoTable");
-        // table.innerHTML = `
-        // < tr >
-        //     <td></td>
-        //     <td>date</td>
-        //     <td>time</td>
-        //     <td>to-do</td>
-        //     <td>
-        //         <select id="categoryFilter">
-        //         </select>
-        //     </td>
-        //     <td></td>
-        // </tr > `;
-
-        // selectElem = document.getElementById("categoryFilter");
-        // console.log(selectElem);
-        // updateSelectOptions();
-        // selectElem.addEventListener("change", filterEntries, false);
-
-        renderRows(todoList);
+        multipleFilter();
     }
 
     function initCalendar() {
