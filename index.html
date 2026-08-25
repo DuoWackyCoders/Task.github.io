@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Reminder</title>
+        <title>TSK</title>
     <link rel="icon" href="data:,">
     <meta name="description" content="Daily Task Reminder, never forget a task.">
     <link rel="stylesheet"
@@ -17,10 +17,16 @@
 <body>
 
     <h3 class="app-header">
-      <span>My Task Reminder</span>
-      <button id="launchPendingBtn" class="launch-btn" type="button" title="Launch Pending Tasks">
-        🚀 Launch Pending Tasks
-      </button>
+      <span>
+        TSK
+        <span class="app-subtitle">Mission control for your day</span>
+      </span>
+      <div class="app-header-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" type="button" title="Toggle dark mode">🌙</button>
+        <button id="launchPendingBtn" class="launch-btn" type="button" title="Open Briefing">
+          🛰️ Briefing
+        </button>
+      </div>
     </h3>
 
     <div class="todo-grid-parent">
