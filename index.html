@@ -37,17 +37,14 @@
                 <span>Category: </span>
                 <input type="text" placeholder="Enter category" list="categoryList" id="categoryInput">
                 <datalist id="categoryList">
-                    <option value="Gntch"></option>
-                    <option value="Smns (RS)"></option>
-                    <option value="Smns (A-Hc)"></option>
-                    <option value="GP"></option>
-                    <option value="MH"></option>
-                    <option value="BRT"></option>
-                    <option value="Rvn (RS)"></option>
-                    <option value="Rvn (A-Hc)"></option>
-                    <option value="EA"></option>
-
                 </datalist>
+
+                <span>Subcategory: </span>
+                <div class="subcategory-row" id="subcategoryRow">
+                    <select id="subcategoryInput" style="display:none;"></select>
+                    <button type="button" id="addSubcategoryBtn" class="quickpick-btn">+ Subcategory</button>
+                </div>
+
                 <span>Date: </span>
                 
                 <div class="date-quickpick">
@@ -158,6 +155,12 @@
                 <input type="text" placeholder="Enter new to-do" id="todo-edit-todo">
                 <span>Category: </span>
                 <input type="text" placeholder="Enter category" id="todo-edit-category" list="categoryList">
+
+                <span>Subcategory: </span>
+                <div class="subcategory-row" id="todoEditSubcategoryRow">
+                    <select id="todo-edit-subcategory" style="display:none;"></select>
+                    <button type="button" id="todoEditAddSubcategoryBtn" class="quickpick-btn">+ Subcategory</button>
+                </div>
 
                 <span>Date: </span>
                 <input type="date" id="todo-edit-date">
