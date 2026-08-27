@@ -626,6 +626,18 @@ h3 {
     color: var(--ink-soft);
 }
 
+.subcategory-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.subcategory-row select {
+    flex: 1;
+    min-width: 120px;
+}
+
 button {
     background-color: var(--surface-alt);
     color: var(--ink);
