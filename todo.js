@@ -33,6 +33,12 @@ function todoMain() {
         todoModelCloseBtn,
         launchPendingBtn,
         themeToggleBtn,
+        categoryListElem,
+        subcategoryInput,
+        addSubcategoryBtn,
+        todoEditSubcategoryInput,
+        todoEditAddSubcategoryBtn,
+        categorySubcategoryMap,
         briefingOverlay,
         briefingModal,
         briefingCloseBtn,
@@ -45,6 +51,7 @@ function todoMain() {
 
     getElements();
     applyStoredTheme();
+    loadCategorySubcategoryMap();
     addListeners();
     initCalendar();
     load();
@@ -54,6 +61,7 @@ function todoMain() {
     // sendMorningBriefingIfNeeded(); // (A4 cleanup) OS notifications disabled
     renderRows(todoList);
     updateSelectOptions();
+    refreshSubcategoryUI();
 
 
     function getElements() {
@@ -76,6 +84,11 @@ function todoMain() {
         console.log("launchPendingBtn:", launchPendingBtn);
 
         themeToggleBtn = document.getElementById("themeToggleBtn");
+        categoryListElem = document.getElementById("categoryList");
+        subcategoryInput = document.getElementById("subcategoryInput");
+        addSubcategoryBtn = document.getElementById("addSubcategoryBtn");
+        todoEditSubcategoryInput = document.getElementById("todo-edit-subcategory");
+        todoEditAddSubcategoryBtn = document.getElementById("todoEditAddSubcategoryBtn");
 
         quickTimePicker = document.getElementById("quickTimePicker");
         quickTimePreview = document.getElementById("quickTimePreview");
@@ -153,6 +166,23 @@ function todoMain() {
           themeToggleBtn.addEventListener("click", toggleTheme, false);
         }
 
+        if (inputElem2) {
+          inputElem2.addEventListener("input", refreshSubcategoryUI, false);
+        }
+
+        if (addSubcategoryBtn) {
+          addSubcategoryBtn.addEventListener("click", onAddSubcategoryClick, false);
+        }
+
+        const todoEditCategoryInput = document.getElementById("todo-edit-category");
+        if (todoEditCategoryInput) {
+          todoEditCategoryInput.addEventListener("input", refreshEditSubcategoryUI, false);
+        }
+
+        if (todoEditAddSubcategoryBtn) {
+          todoEditAddSubcategoryBtn.addEventListener("click", onAddEditSubcategoryClick, false);
+        }
+
         document.addEventListener("keydown", function (e) {
           if (
             e.key === "Escape" &&
@@ -184,6 +214,110 @@ function todoMain() {
       }
     }
 
+    function loadCategorySubcategoryMap() {
+      let retrieved = localStorage.getItem("tsk-categorySubcategories");
+      categorySubcategoryMap = retrieved ? JSON.parse(retrieved) : {};
+    }
+
+    function saveCategorySubcategoryMap() {
+      localStorage.setItem("tsk-categorySubcategories", JSON.stringify(categorySubcategoryMap));
+    }
+
+    function getSubcategoriesFor(category) {
+      if (!category || !categorySubcategoryMap[category]) return [];
+      return categorySubcategoryMap[category];
+    }
+
+    function addSubcategoryToCategory(category, subcategory) {
+      if (!categorySubcategoryMap[category]) {
+        categorySubcategoryMap[category] = [];
+      }
+      if (!categorySubcategoryMap[category].includes(subcategory)) {
+        categorySubcategoryMap[category].push(subcategory);
+        saveCategorySubcategoryMap();
+      }
+    }
+
+    function populateSubcategorySelect(selectEl, subs) {
+      selectEl.innerHTML = "";
+
+      let blankOptionElem = document.createElement("option");
+      blankOptionElem.value = "";
+      blankOptionElem.innerText = "— none —";
+      selectEl.appendChild(blankOptionElem);
+
+      subs.forEach(sub => {
+        let optionElem = document.createElement("option");
+        optionElem.value = sub;
+        optionElem.innerText = sub;
+        selectEl.appendChild(optionElem);
+      });
+    }
+
+    function refreshSubcategoryUI() {
+      if (!subcategoryInput || !addSubcategoryBtn) return;
+
+      const category = inputElem2.value.trim();
+      const subs = getSubcategoriesFor(category);
+
+      if (subs.length > 0) {
+        populateSubcategorySelect(subcategoryInput, subs);
+        subcategoryInput.style.display = "";
+      } else {
+        subcategoryInput.style.display = "none";
+        subcategoryInput.innerHTML = "";
+      }
+
+      addSubcategoryBtn.disabled = !category;
+    }
+
+    function onAddSubcategoryClick() {
+      const category = inputElem2.value.trim();
+      if (!category) {
+        alert("Enter a category first.");
+        return;
+      }
+
+      const newSub = prompt(`New subcategory for "${category}":`);
+      if (!newSub || !newSub.trim()) return;
+
+      addSubcategoryToCategory(category, newSub.trim());
+      refreshSubcategoryUI();
+      subcategoryInput.value = newSub.trim();
+    }
+
+    function refreshEditSubcategoryUI() {
+      if (!todoEditSubcategoryInput || !todoEditAddSubcategoryBtn) return;
+
+      const category = document.getElementById("todo-edit-category").value.trim();
+      const subs = getSubcategoriesFor(category);
+
+      if (subs.length > 0) {
+        populateSubcategorySelect(todoEditSubcategoryInput, subs);
+        todoEditSubcategoryInput.style.display = "";
+      } else {
+        todoEditSubcategoryInput.style.display = "none";
+        todoEditSubcategoryInput.innerHTML = "";
+      }
+
+      todoEditAddSubcategoryBtn.disabled = !category;
+    }
+
+    function onAddEditSubcategoryClick() {
+      const category = document.getElementById("todo-edit-category").value.trim();
+      if (!category) {
+        alert("Enter a category first.");
+        return;
+      }
+
+      const newSub = prompt(`New subcategory for "${category}":`);
+      if (!newSub || !newSub.trim()) return;
+
+      addSubcategoryToCategory(category, newSub.trim());
+      refreshEditSubcategoryUI();
+      todoEditSubcategoryInput.value = newSub.trim();
+    }
+
     function addEntry(event) {
 
         let inputValue = inputElem.value;
@@ -192,19 +326,20 @@ function todoMain() {
         let inputValue2 = inputElem2.value;
         inputElem2.value = "";
 
+        let subcategoryValue = subcategoryInput ? subcategoryInput.value : "";
+
         let dateValue = dateInput.value;
         dateInput.value = "";
 
         let timeValue = timeInput.value;
         timeInput.value = "";
 
-        resetQuickTimePicker();
-
         let obj = {
             // A comma is used to seperate the properties
             id: _uuid(),
             todo: inputValue,
             category: inputValue2,
+            subcategory: subcategoryValue,
             date: dateValue,
             time: timeValue,
             done: false,
@@ -215,35 +350,62 @@ function todoMain() {
         save();
 
         updateSelectOptions();
+        refreshSubcategoryUI();
 
         // ✅ rebuild list/calendar using your current filter + “Incomplete First”
         multipleFilter();
     }
 
     function updateSelectOptions() {
-        let Options = [];
+        // collect category -> set of subcategories actually used in the list
+        let categoryMap = new Map();
 
         todoList.forEach((obj) => {
-            Options.push(obj.category);
+            if (!obj.category) return;
+            if (!categoryMap.has(obj.category)) {
+                categoryMap.set(obj.category, new Set());
+            }
+            if (obj.subcategory) {
+                categoryMap.get(obj.category).add(obj.subcategory);
+            }
         });
-
-        let optionsSet = new Set(Options);
 
         //empty the select options
         selectElem.innerHTML = "";
 
-        let newOptionElem = document.createElement('option');
-        newOptionElem.value = DEFAULT_OPTION;
-        newOptionElem.innerText = DEFAULT_OPTION;
-        selectElem.appendChild(newOptionElem);
+        let defaultOptionElem = document.createElement('option');
+        defaultOptionElem.value = DEFAULT_OPTION;
+        defaultOptionElem.innerText = DEFAULT_OPTION;
+        selectElem.appendChild(defaultOptionElem);
 
-        for (let option of optionsSet) {
-            let newOptionElem = document.createElement('option');
-            newOptionElem.value = option;
-            newOptionElem.innerText = option;
-            selectElem.appendChild(newOptionElem);
+        for (let [category, subcategorySet] of categoryMap) {
+            let groupElem = document.createElement('optgroup');
+            groupElem.label = category;
+
+            let allOptionElem = document.createElement('option');
+            allOptionElem.value = category;
+            allOptionElem.innerText = `All ${category}`;
+            groupElem.appendChild(allOptionElem);
+
+            for (let subcategory of subcategorySet) {
+                let subOptionElem = document.createElement('option');
+                subOptionElem.value = `${category}::${subcategory}`;
+                subOptionElem.innerText = subcategory;
+                groupElem.appendChild(subOptionElem);
+            }
+
+            selectElem.appendChild(groupElem);
         }
 
+        // keep the "Category" autosuggest list in sync with categories you've actually used
+        if (categoryListElem) {
+            categoryListElem.innerHTML = "";
+            for (let category of categoryMap.keys()) {
+                let datalistOptionElem = document.createElement('option');
+                datalistOptionElem.value = category;
+                categoryListElem.appendChild(datalistOptionElem);
+            }
+        }
 
     }
 
@@ -286,7 +448,7 @@ function todoMain() {
         })
     }
 
-    function renderRow({ todo: inputValue, category: inputValue2, id, date, time, done }) {
+    function renderRow({ todo: inputValue, category: inputValue2, subcategory, id, date, time, done }) {
         //add a new rule
 
         let trElem = document.createElement("tr");
@@ -329,7 +491,7 @@ function todoMain() {
 
         //category cell
         let tdElem3 = document.createElement("td");
-        tdElem3.innerText = inputValue2;
+        tdElem3.innerText = subcategory ? `${inputValue2} › ${subcategory}` : inputValue2;
         tdElem3.className = "categoryCell";
         trElem.appendChild(tdElem3);
 
@@ -521,45 +683,25 @@ function todoMain() {
     function multipleFilter() {
         clearTable();
 
-
         let selection = selectElem.value;
 
+        let baseArray;
+
         if (selection == DEFAULT_OPTION) {
-
-            if (shortlistBtn.checked) {
-                let resultArray = [];
-
-                let filteredIncompleteArray = todoList.filter(obj => obj.done == false);
-                // renderRows(filteredIncompleteArray);
-
-                let filteredDoneArray = todoList.filter(obj => obj.done == true);
-                // renderRows(filteredDoneArray);
-
-                resultArray = [...filteredIncompleteArray, ...filteredDoneArray];
-                renderRows(resultArray);
-            } else {
-                renderRows(todoList);
-            }
-
+            baseArray = todoList;
+        } else if (selection.indexOf("::") !== -1) {
+            let [selCategory, selSubcategory] = selection.split("::");
+            baseArray = todoList.filter(obj => obj.category == selCategory && obj.subcategory == selSubcategory);
         } else {
+            baseArray = todoList.filter(obj => obj.category == selection);
+        }
 
-            let filteredCategoryArray = todoList.filter(obj => obj.category == selection);
-
-            if (shortlistBtn.checked) {
-                let resultArray = [];
-
-                let filteredIncompleteArray = filteredCategoryArray.filter(obj => obj.done == false);
-                // renderRows(filteredIncompleteArray);
-
-                let filteredDoneArray = filteredCategoryArray.filter(obj => obj.done == true);
-                // renderRows(filteredDoneArray);
-
-                resultArray = [...filteredIncompleteArray, ...filteredDoneArray];
-                renderRows(resultArray);
-            } else {
-                renderRows(filteredCategoryArray);
-            }
-
+        if (shortlistBtn.checked) {
+            let filteredIncompleteArray = baseArray.filter(obj => obj.done == false);
+            let filteredDoneArray = baseArray.filter(obj => obj.done == true);
+            renderRows([...filteredIncompleteArray, ...filteredDoneArray]);
+        } else {
+            renderRows(baseArray);
         }
     }
 
@@ -735,6 +877,7 @@ function todoMain() {
         let id = event.target.dataset.id;
         let todo = document.getElementById("todo-edit-todo").value;
         let category = document.getElementById("todo-edit-category").value;
+        let subcategory = todoEditSubcategoryInput ? todoEditSubcategoryInput.value : "";
         let date = document.getElementById("todo-edit-date").value;
         let time = document.getElementById("todo-edit-time").value;
         let done = todoEditDoneCheckbox ? todoEditDoneCheckbox.checked : false;
@@ -749,6 +892,7 @@ function todoMain() {
                     id: id,
                     todo: todo,
                     category: category,
+                    subcategory: subcategory,
                     date: date,
                     time: time,
                     done: done,
@@ -760,6 +904,7 @@ function todoMain() {
         }
 
         save();
+        updateSelectOptions();
         multipleFilter(); // ✅ rebuild table + calendar view correctly under pagination/filter
 
         if (briefingOverlay && briefingOverlay.classList.contains("briefing-slidedIntoView")) {
@@ -784,12 +929,17 @@ function todoMain() {
         let result = todoList.find(todoObj => todoObj.id == id);
         if (!result) return;
 
-        let { todo, category, date, time, done } = result;
+        let { todo, category, subcategory, date, time, done } = result;
 
         document.getElementById("todo-edit-todo").value = todo;
         document.getElementById("todo-edit-category").value = category;
         document.getElementById("todo-edit-date").value = date;
         document.getElementById("todo-edit-time").value = time;
+
+        refreshEditSubcategoryUI();
+        if (todoEditSubcategoryInput) {
+          todoEditSubcategoryInput.value = subcategory || "";
+        }
 
         // NEW: prefill completed checkbox
         if (todoEditDoneCheckbox) {
