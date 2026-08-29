@@ -1,223 +1,695 @@
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TSK</title>
-    <link rel="icon" href="data:,">
-    <meta name="description" content="Daily Task Reminder, never forget a task.">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="todo.css">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PULSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 </head>
-
 <body>
+<div class="app-container">
 
-    <h3 class="app-header">
-      <span>
-        TSK
-        <span class="app-subtitle">Mission control for your day</span>
-      </span>
-      <div class="app-header-actions">
-          <select id="themeSelect" class="theme-select" title="Color theme">
-              <option value="light">Ops — Light</option>
-              <option value="dark">Ops — Dark</option>
-              <option value="diablo">Diablo</option>
-              <option value="bitcoin">Bitcoin</option>
-              <option value="synthwave">Synthwave</option>
-              <option value="matrix">Matrix</option>
-              <option value="gold">Gold</option>
-              <option value="aurora">Aurora</option>
-            </select>
-            <button id="launchPendingBtn" class="launch-btn" type="button" title="Open Briefing">
-              🛰️ Briefing
-            </button>
-          </div>
-        </h3>
-
-    <div class="todo-grid-parent">
-        <div>
-            <div class="todo-input todo-block">
-                <span>To-do:</span>
-                <input type="text" placeholder="Enter new to-do" id="todoInput">
-                <span>Category: </span>
-                <input type="text" placeholder="Enter category" list="categoryList" id="categoryInput">
-                <datalist id="categoryList">
-                </datalist>
-
-                <span>Subcategory: </span>
-                <div class="subcategory-row" id="subcategoryRow">
-                    <select id="subcategoryInput" style="display:none;"></select>
-                    <button type="button" id="addSubcategoryBtn" class="quickpick-btn">+ Subcategory</button>
-                </div>
-
-                <span>Date: </span>
-                
-                <div class="date-quickpick">
-                    <button type="button" id="setTodayBtn" class="quickpick-btn">Today</button>
-                    <button type="button" id="setTomorrowBtn" class="quickpick-btn">Tomorrow</button>
-                    <input type="date" id="dateInput">
-                </div>
-
-               <Span>Time: </Span>
-
-                <div class="time-stack">
-                  <!-- Quick Time Picker -->
-                  <div class="quicktime" id="quickTimePicker">
-                    <div class="quicktime-col">
-                      <div class="quicktime-label">Hour</div>
-                      <div class="quicktime-grid quicktime-grid-hours">
-                        <button type="button" class="quicktime-btn" data-hour="1">1</button>
-                        <button type="button" class="quicktime-btn" data-hour="2">2</button>
-                        <button type="button" class="quicktime-btn" data-hour="3">3</button>
-                        <button type="button" class="quicktime-btn" data-hour="4">4</button>
-                        <button type="button" class="quicktime-btn" data-hour="5">5</button>
-                        <button type="button" class="quicktime-btn" data-hour="6">6</button>
-                        <button type="button" class="quicktime-btn" data-hour="7">7</button>
-                        <button type="button" class="quicktime-btn" data-hour="8">8</button>
-                        <button type="button" class="quicktime-btn" data-hour="9">9</button>
-                        <button type="button" class="quicktime-btn" data-hour="10">10</button>
-                        <button type="button" class="quicktime-btn" data-hour="11">11</button>
-                        <button type="button" class="quicktime-btn" data-hour="12">12</button>
-                      </div>
-                    </div>
-
-                    <div class="quicktime-col">
-                      <div class="quicktime-label">Minute</div>
-                      <div class="quicktime-grid quicktime-grid-minutes">
-                        <button type="button" class="quicktime-btn" data-minute="00">00</button>
-                        <button type="button" class="quicktime-btn" data-minute="15">15</button>
-                        <button type="button" class="quicktime-btn" data-minute="30">30</button>
-                        <button type="button" class="quicktime-btn" data-minute="45">45</button>
-                      </div>
-                    </div>
-
-                    <div class="quicktime-col">
-                      <div class="quicktime-label">AM / PM</div>
-                      <div class="quicktime-grid quicktime-grid-ampm">
-                        <button type="button" class="quicktime-btn" data-ampm="AM">AM</button>
-                        <button type="button" class="quicktime-btn" data-ampm="PM">PM</button>
-                      </div>
-                    </div>
-
-                    <div class="quicktime-preview" id="quickTimePreview">Set: —</div>
-                  </div>
-
-                  <!-- Native time input stays (fallback) -->
-                  <input type="time" id="timeInput">
-                </div>
-                
-                <span></span>
-                <button id="addBtn">Add</button>
-                <span></span>
-                <button id="sortBtn">Sort By Date</button>
-                <span></span>
-                <label><input type="checkbox" id="shortlistBtn"> Incomplete First</label>
-            </div>
-
-            <div class="todo-block todoTable-block">
-                <div class="itemsPerPage">
-                    <span>Items per page</span>
-                    <select id="itemsPerPageSelectElem">
-                        <option value="15">15</option>
-                        <option value="30">30</option>
-                        <option value="45">45</option>
-                        <option value="60">60</option>
-                    </select>
-
-
-                </div>
-                
-                <table id="todoTable">
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>To-Do</th>
-                      <th><select id="categoryFilter"></select></th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-
-                <div class="pagination-pages">
-
-                </div>
-            </div>
-
-        </div>
-
-        <div class="todo-calendar todo-block">
-            <div id='calendar'></div>
-        </div>
-    </div> <!--class="todo-grid-parent"-->
-
-    <div class="todo-overlay" id="todo-overlay">
-        <div class="todo-model" id="todo-model">
-            <div class="todo-input todo-block">
-                <span>To-do:</span>
-                <input type="text" placeholder="Enter new to-do" id="todo-edit-todo">
-                <span>Category: </span>
-                <input type="text" placeholder="Enter category" id="todo-edit-category" list="categoryList">
-
-                <span>Subcategory: </span>
-                <div class="subcategory-row" id="todoEditSubcategoryRow">
-                    <select id="todo-edit-subcategory" style="display:none;"></select>
-                    <button type="button" id="todoEditAddSubcategoryBtn" class="quickpick-btn">+ Subcategory</button>
-                </div>
-
-                <span>Date: </span>
-                <input type="date" id="todo-edit-date">
-                <Span>Time: </Span>
-                <input type="time" id="todo-edit-time">
-
-                <!-- NEW: Completed toggle -->
-                <div class="todo-edit-actions">
-                  <label class="todo-edit-done">
-                     <input type="checkbox" id="todo-edit-done">
-                    Completed
-                  </label>
-
-                  <button id="changeBtn">Save Change</button>
-                </div>
-            </div>
-        </div>
-        <div class="todo-model-close-btn" id="todo-model-close-btn">X</div>
-
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 60 24" aria-hidden="true">
+        <polyline points="0,12 14,12 18,3 24,21 30,8 34,16 38,12 60,12"
+          fill="none" stroke="url(#pulseGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="pulseGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="var(--pink)"/>
+            <stop offset="50%" stop-color="var(--peach)"/>
+            <stop offset="100%" stop-color="var(--lime)"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="brand-name">PULSE</span>
     </div>
 
-    <!-- Command Briefing Overlay -->
-    <div class="briefing-overlay" id="briefing-overlay">
-      <div class="briefing-modal" id="briefing-modal">
-        <div class="briefing-header">
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="home" type="button">🏠 Home</button>
+      <button class="nav-tab" data-tab="schedule" type="button">📅 Schedule</button>
+      <button class="nav-tab" data-tab="clients" type="button">👥 Clients</button>
+      <button class="nav-tab" data-tab="csvcenter" type="button">🗂️ Client Center</button>
+      <button class="nav-tab" data-tab="about" type="button">ℹ️ About</button>
+    </nav>
+
+    <label class="field" style="padding: 0 4px;">Viewing as
+      <select id="providerFilter">
+        <option value="">All Providers</option>
+      </select>
+    </label>
+
+    <button class="nav-tab" data-tab="admin" type="button">⚙️ Admin</button>
+
+    <button id="themeToggle" class="theme-toggle" type="button" title="Quick toggle for the default Peach & Pink look — for other themes, use Admin">🌙 Default: Dark</button>
+  </aside>
+
+  <main class="main-content">
+
+  <div id="tab-home" class="tab-panel">
+    <section class="card">
+      <div class="card-header">
         <div>
-            <div class="briefing-title">Command Briefing</div>
-            <div class="briefing-subtitle" id="briefing-subtitle">Pending today: 0 • Completed: 0</div>
+          <h2 class="card-title" id="calendarMonthLabel">Calendar</h2>
+          <p class="card-subtitle">Days are colored by which group they used — same colors as the Clients tab. Multiple dots mean multiple groups that day. Click a day to see who's on it.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="calPrevBtn" class="btn btn-secondary" type="button">◀ Prev</button>
+          <button id="calTodayBtn" class="btn btn-ghost" type="button">Today</button>
+          <button id="calNextBtn" class="btn btn-secondary" type="button">Next ▶</button>
+          <button id="exportMonthBtn" class="btn btn-secondary" type="button">⬇️ Export Month CSV</button>
+        </div>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+  </div>
+
+  <div id="tab-schedule" class="tab-panel" style="display:none;">
+
+    <div class="mode-toggle">
+      <button id="dailyModeBtn" class="mode-btn active" type="button">📆 Daily</button>
+      <button id="weeklyModeBtn" class="mode-btn" type="button">🗓️ Weekly</button>
+      <button id="monthlyModeBtn" class="mode-btn" type="button">📅 Monthly</button>
+    </div>
+
+    <div id="scheduleModeDaily">
+    <section class="card">
+      <h2 class="card-title">Build today's route</h2>
+      <p class="card-subtitle">Pick a group, set how many stops, and generate an optimized order. Drive times are straight-line estimates.</p>
+
+      <div class="schedule-grid">
+        <label class="field">Date being scheduled
+          <input type="date" id="scheduleDate">
+        </label>
+        <label class="field">Starting address (home base)
+          <div style="display:flex; gap:8px; align-items:center;">
+            <select id="startAddressSelect" style="flex:1; min-width:0;">
+              <option value="">+ Add new address...</option>
+            </select>
+            <button id="showAddAddressBtn" type="button" title="Add a new starting address" style="flex-shrink:0; width:38px; height:38px; border-radius:50%; border:none; background: var(--peach); color: var(--text-on-accent); font-size:1.2rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">+</button>
+          </div>
+        </label>
+        <div id="newAddressForm" class="field" style="display:none; grid-column: 1 / -1;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <input type="text" id="newAddressLabel" placeholder="Label (e.g. Office)" style="flex:1; min-width:140px;">
+            <input type="text" id="newAddressText" placeholder="Full address" style="flex:2; min-width:200px;">
+            <button id="saveNewAddressBtn" class="btn btn-secondary" type="button">Save address</button>
+            <button id="cancelNewAddressBtn" class="btn btn-ghost" type="button">Cancel</button>
+          </div>
+        </div>
+        <label class="field">Group
+          <select id="groupSelect"></select>
+        </label>
+        <label class="field">+ Also include (optional)
+          <select id="groupSelect2"></select>
+        </label>
+        <label class="field">Stops today
+          <input type="number" id="stopCount" min="1" value="8">
+        </label>
+        <label class="field">Start time
+          <input type="time" id="startTime" value="08:00">
+        </label>
+        <label class="field">Visit duration (min, default)
+          <input type="number" id="visitDuration" min="1" value="15">
+        </label>
+        <label class="field">Max hours before warning
+          <input type="number" id="maxHours" min="1" step="0.5" value="7">
+        </label>
+        <label class="field">Route direction
+          <select id="routeDirection">
+            <option value="closest">Closest first</option>
+            <option value="furthest" selected>Furthest first (default — beats traffic, finish near home)</option>
+          </select>
+        </label>
+      </div>
+
+      <label style="display:flex; align-items:center; gap:8px; margin-top:14px; font-family: var(--font-body); font-weight:600; font-size:0.85rem; color: var(--text-soft);">
+        <input type="checkbox" id="includeRecent" style="width:16px; height:16px;">
+        Include patients visited in the last 30 days (manual override — e.g. vacation reschedule)
+      </label>
+
+      <button id="generateRouteBtn" class="btn btn-primary" type="button" style="margin-top:16px;">Generate Route</button>
+      <p id="scheduleStatus" class="status-line"></p>
+    </section>
+
+    <section class="card" id="routeBuilderCard" style="display:none;">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Today's route</h2>
+          <p class="card-subtitle">Drag patients between columns, or drag to reorder within a column. Times recalculate automatically.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="openGoogleMapsBtn" class="btn btn-secondary" type="button">🗺️ Open in Google Maps</button>
+          <button id="myMapsCsvBtn" class="btn btn-secondary" type="button">📍 Download for Google My Maps</button>
+          <button id="cancelRouteBtn" class="btn btn-ghost" type="button">✖ Cancel / Reset</button>
+        </div>
+      </div>
+      <div id="routeSummary" class="route-summary"></div>
+      <div id="myMapsHelp" class="status-line" style="display:none;"></div>
+      <div id="routeMap" class="route-map"></div>
+      <p class="card-subtitle" style="margin-top:8px;">🏠 Home • 📍 Scheduled stop • 🟢 Available (not on route) • 🩷 Unavailable (visited in last 30 days)</p>
+
+      <div id="approveTopBar" style="display:flex; gap:10px; margin:14px 0; flex-wrap:wrap;">
+        <button id="approveScheduleBtnTop" class="btn btn-primary" type="button">✅ Approve schedule</button>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <input type="text" id="scheduleSearchInput" placeholder="🔍 Search any patient to add to this day..." style="width:100%; font-family: var(--font-mono); font-size:0.9rem; padding:10px 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text);">
+        <div id="scheduleSearchResults" style="display:none; margin-top:8px;"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="col">
+          <h3>Scheduled (<span id="scheduledCount">0</span>)</h3>
+          <ul id="scheduledList" class="drag-list" data-list="scheduled"></ul>
+        </div>
+        <div class="col">
+          <h3>Leftover (<span id="leftoverCount">0</span>)</h3>
+          <ul id="leftoverList" class="drag-list" data-list="leftover"></ul>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+        <button id="approveScheduleBtn" class="btn btn-primary" type="button">✅ Approve schedule</button>
+        <button id="exportScheduleCsvBtn" class="btn btn-secondary" type="button">⬇️ Download CSV (for DrChrono)</button>
+      </div>
+    </section>
+    </div>
+
+    <div id="scheduleModeWeekly" style="display:none;">
+      <section class="card">
+        <h2 class="card-title">Build this week's routes</h2>
+        <p class="card-subtitle">Pick each day's group and stop count independently, then generate all five at once.</p>
+
+        <div class="schedule-grid">
+          <label class="field">Week starting (Monday)
+            <input type="date" id="weekStartDate">
+          </label>
+          <label class="field">Starting address (home base)
+            <select id="weekStartAddressSelect"></select>
+          </label>
+          <label class="field">Start time
+            <input type="time" id="weekStartTime" value="08:00">
+          </label>
+          <label class="field">Visit duration (min, default)
+            <input type="number" id="weekVisitDuration" min="1" value="15">
+          </label>
+          <label class="field">Route direction
+            <select id="weekRouteDirection">
+              <option value="closest">Closest first</option>
+              <option value="furthest" selected>Furthest first (default — beats traffic, finish near home)</option>
+            </select>
+          </label>
+        </div>
+        <label style="display:flex; align-items:center; gap:8px; margin-top:14px; font-family: var(--font-body); font-weight:600; font-size:0.85rem; color: var(--text-soft);">
+          <input type="checkbox" id="weekIncludeRecent" style="width:16px; height:16px;">
+          Include patients visited in the last 30 days (manual override)
+        </label>
+
+        <div class="work-days-row">
+          <span class="work-days-label">Standard work days (saved automatically):</span>
+          <label class="work-day-check"><input type="checkbox" class="workDayToggle" data-day="0"> Mon</label>
+          <label class="work-day-check"><input type="checkbox" class="workDayToggle" data-day="1"> Tue</label>
+          <label class="work-day-check"><input type="checkbox" class="workDayToggle" data-day="2"> Wed</label>
+          <label class="work-day-check"><input type="checkbox" class="workDayToggle" data-day="3"> Thu</label>
+          <label class="work-day-check"><input type="checkbox" class="workDayToggle" data-day="4"> Fri</label>
         </div>
 
-          <button class="briefing-close-btn" id="briefing-close-btn" type="button" aria-label="Close briefing">
-            X
-          </button>
-        </div>
+        <div id="weekDayCards" class="week-day-cards"></div>
 
-        <div class="briefing-body" id="briefing-list">
-          <!-- Rows will be injected here by JS -->
+        <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+          <button id="generateWeekBtn" class="btn btn-primary" type="button">Generate Week</button>
+          <button id="approveWeekBtn" class="btn btn-primary" type="button" style="display:none;">✅ Approve Whole Week</button>
+          <button id="cancelWeekBtn" class="btn btn-ghost" type="button">✖ Cancel / Reset</button>
         </div>
+        <p id="weekStatus" class="status-line"></p>
+      </section>
 
-        <div class="briefing-footer">
-          <button class="briefing-footer-btn" id="briefing-footer-close-btn" type="button">
-            Close
-          </button>
+      <div id="weekResults"></div>
+    </div>
+
+    <div id="scheduleModeMonthly" style="display:none;">
+      <section class="card">
+        <h2 class="card-title">Build this month's routes</h2>
+        <p class="card-subtitle">Takes everyone due in the chosen group, orders them geographically (so nearby patients land on the same or adjacent days), and spreads them evenly across the month's working days.</p>
+
+        <div class="schedule-grid">
+          <label class="field">Month
+            <input type="month" id="monthPicker">
+          </label>
+          <label class="field">Starting address (home base)
+            <select id="monthStartAddressSelect"></select>
+          </label>
+          <label class="field">Group
+            <select id="monthGroupSelect"></select>
+          </label>
+          <label class="field">Stops per day
+            <input type="number" id="monthStopCount" min="1" value="8">
+          </label>
+          <label class="field">Start time
+            <input type="time" id="monthStartTime" value="08:00">
+          </label>
+          <label class="field">Visit duration (min, default)
+            <input type="number" id="monthVisitDuration" min="1" value="15">
+          </label>
+          <label class="field">Route direction (per day)
+            <select id="monthRouteDirection">
+              <option value="closest">Closest first</option>
+              <option value="furthest" selected>Furthest first (default — beats traffic, finish near home)</option>
+            </select>
+          </label>
         </div>
-          
+        <label style="display:flex; align-items:center; gap:8px; margin-top:14px; font-family: var(--font-body); font-weight:600; font-size:0.85rem; color: var(--text-soft);">
+          <input type="checkbox" id="monthIncludeRecent" style="width:16px; height:16px;">
+          Include patients visited in the last 30 days (manual override)
+        </label>
+
+        <p class="card-subtitle" style="margin-top:14px;">Each week in the month gets its own work days — pick the month above, then set each week below. Starts pre-filled from your usual pattern, adjust any week that's different.</p>
+        <div id="monthWeekPatternRows"></div>
+
+        <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+          <button id="generateMonthBtn" class="btn btn-primary" type="button">Generate Month</button>
+          <button id="approveMonthBtn" class="btn btn-primary" type="button" style="display:none;">✅ Approve Whole Month</button>
+          <button id="cancelMonthBtn" class="btn btn-ghost" type="button">✖ Cancel / Reset</button>
+        </div>
+        <p id="monthStatus" class="status-line"></p>
+      </section>
+
+      <div id="monthResults"></div>
+    </div>
+
+  </div>
+
+  <div id="overageModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 class="card-title">Heads up</h3>
+      <p id="overageText"></p>
+      <div class="modal-actions">
+        <button id="modalGoBack" class="btn btn-secondary" type="button">Go Back</button>
+        <button id="modalApprove" class="btn btn-primary" type="button">Approved</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dayDetailModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-sticky-header">
+        <button id="dayDetailCloseX" class="modal-close-x" type="button" aria-label="Close">✕</button>
+        <div>
+          <h3 class="card-title" id="dayDetailTitle">—</h3>
+          <p class="card-subtitle" id="dayDetailSubtitle"></p>
+        </div>
+      </div>
+      <div id="dayDetailList" class="modal-scroll-body"></div>
+      <div class="modal-sticky-footer">
+        <button id="dayDetailBack" class="btn btn-secondary" type="button">← Back to Calendar</button>
+        <button id="dayDetailGoogleMapsBtn" class="btn btn-secondary" type="button">🗺️ Open in Google Maps</button>
+        <button id="exportDayBtn" class="btn btn-secondary" type="button">⬇️ Export Day CSV</button>
+        <button id="exportWeekBtn" class="btn btn-secondary" type="button">⬇️ Export Week CSV</button>
+        <button id="cancelDayScheduleBtn" class="btn btn-tiny btn-tiny-danger" type="button" style="padding:10px 14px; font-size:0.85rem;">🗑️ Cancel This Day</button>
+        <button id="cancelWeekScheduleBtn" class="btn btn-tiny btn-tiny-danger" type="button" style="padding:10px 14px; font-size:0.85rem;">🗑️ Cancel This Week</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editPatientModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 class="card-title">Edit patient</h3>
+      <div class="schedule-grid" style="grid-template-columns: 1fr;">
+        <label class="field">Name
+          <input type="text" id="editName">
+        </label>
+        <label class="field">Address
+          <input type="text" id="editAddress">
+        </label>
+        <label class="field">DOB
+          <input type="text" id="editDob">
+        </label>
+        <label class="field">Coordinator
+          <input type="text" id="editCoordinator">
+        </label>
+        <label class="field">Provider
+          <input type="text" id="editProvider">
+        </label>
+        <label class="field">Last visit date (clears the "due" status — leave blank if never visited)
+          <input type="date" id="editLastVisit">
+        </label>
+      </div>
+      <p id="editStatus" class="status-line"></p>
+      <div class="modal-actions">
+        <button id="editCancelBtn" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="editSaveBtn" class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="clearAllModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 class="card-title" id="clearAllTitle">Are you sure?</h3>
+      <p id="clearAllText"></p>
+      <div class="modal-actions" id="clearAllActions"></div>
+    </div>
+  </div>
+
+  <div id="overwriteModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 class="card-title">⚠️ Already scheduled</h3>
+      <p id="overwriteText"></p>
+      <div class="modal-actions" id="overwriteActions"></div>
+    </div>
+  </div>
+
+  <div id="changeDateModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 class="card-title">Move to which date?</h3>
+      <p id="changeDateSubtitle" class="card-subtitle"></p>
+      <input type="date" id="changeDateInput" style="width:100%; font-family: var(--font-mono); font-size:0.95rem; padding:10px 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text); margin-top:10px;">
+      <div class="modal-actions">
+        <button id="changeDateCancelBtn" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="changeDateConfirmBtn" class="btn btn-primary" type="button">Move</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editArrivalModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h3 class="card-title">Edit arrival time</h3>
+      <p id="editArrivalSubtitle" class="card-subtitle"></p>
+      <input type="time" id="editArrivalInput" style="width:100%; font-family: var(--font-mono); font-size:0.95rem; padding:10px 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text); margin-top:10px;">
+      <p id="editArrivalNote" class="status-line"></p>
+      <div class="modal-actions">
+        <button id="editArrivalResetBtn" class="btn btn-ghost" type="button" style="display:none;">↺ Reset to auto</button>
+        <button id="editArrivalCancelBtn" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="editArrivalSaveBtn" class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dayReviewModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-sticky-header">
+        <button id="dayReviewCloseX" class="modal-close-x" type="button" aria-label="Close">✕</button>
+        <div>
+          <h3 class="card-title" id="dayReviewTitle">—</h3>
+          <p class="card-subtitle">Click a blue pin to remove that stop, or a green pin to add it — nothing is saved until you hit Confirm.</p>
+        </div>
+      </div>
+      <div class="modal-scroll-body">
+        <div id="dayReviewSummary" class="route-summary"></div>
+        <div id="dayReviewMap" class="route-map"></div>
+        <p class="card-subtitle" style="margin-top:8px;">🏠 Home • 📍 Scheduled stop • 🟢 Available (unassigned or on another day this batch)</p>
+        <div style="margin: 14px 0;">
+          <input type="text" id="dayReviewSearchInput" placeholder="🔍 Search any patient to add to this day..." style="width:100%; font-family: var(--font-mono); font-size:0.9rem; padding:10px 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text);">
+          <div id="dayReviewSearchResults" style="display:none; margin-top:8px;"></div>
+        </div>
+        <h3>Scheduled (<span id="dayReviewCount">0</span>)</h3>
+        <div id="dayReviewList"></div>
+      </div>
+      <div class="modal-sticky-footer">
+        <button id="dayReviewCancelBtn" class="btn btn-secondary" type="button">✖ Cancel</button>
+        <button id="dayReviewConfirmBtn" class="btn btn-primary" type="button">✔ Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-clients" class="tab-panel" style="display:none;">
+
+  <!-- GROUPING CARD -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Groups</h2>
+        <p class="card-subtitle">Pulse automatically clusters your patients by proximity — no setup needed, this just happens as you upload. Optional: draw a circle on the map only if you want to manually override one specific area.</p>
+      </div>
+    </div>
+    <div class="radius-control">
+      <span class="radius-value" id="groupSizeValue">20</span>
+      <input type="range" id="groupSizeSlider" min="5" max="30" step="1" value="20">
+      <span class="card-subtitle" style="margin:0;">max patients per auto-group</span>
+    </div>
+    <div id="groupSummary" style="margin-top:16px; margin-bottom:8px;"></div>
+    <button id="resetAutoGroupBtn" class="btn btn-ghost" type="button" style="margin-bottom:16px;">↺ Reset all to auto-grouping</button>
+
+    <div id="clientsMap" class="clients-map"></div>
+    <div id="drawAssignBar" class="draw-assign-bar" style="display:none;">
+      <span id="drawAssignCount"></span>
+      <input type="text" id="drawGroupLabel" placeholder="Group label (e.g. A)" style="max-width:140px;">
+      <button id="drawAssignBtn" class="btn btn-primary" type="button">Assign group</button>
+      <button id="drawCancelBtn" class="btn btn-ghost" type="button">Cancel</button>
+    </div>
+  </section>
+
+  <!-- PATIENT TABLE CARD -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">All patients</h2>
+        <p class="card-subtitle">Group assignment updates automatically as you add patients or change the radius.</p>
       </div>
     </div>
 
-    <script src="todo.js" defer></script>
+    <div style="position:relative; margin-bottom:8px;">
+      <input type="text" id="clientsSearchInput" placeholder="🔍 Search patients by name..." autocomplete="off" style="width:100%; font-family: var(--font-mono); font-size:0.9rem; padding:10px 40px 10px 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text);">
+      <button type="button" id="clientsSearchClearX" style="display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); width:24px; height:24px; border-radius:50%; border:none; background:var(--border); color:var(--text); font-size:0.85rem; cursor:pointer; line-height:1;">✕</button>
+    </div>
+    <div id="clientsFilterCount" style="display:none; margin-bottom:16px;"></div>
+
+    <div id="emptyState" class="empty-state">
+      <p>No patients yet.</p>
+      <p>Upload a CSV above to get started.</p>
+    </div>
+
+    <div id="tableWrap" class="table-wrap" style="display:none;">
+      <table>
+        <thead id="patientTableHead">
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>DOB</th>
+            <th>Coordinator</th>
+            <th>Group</th>
+            <th>Override</th>
+          </tr>
+        </thead>
+        <tbody id="patientTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div>
+
+  <div id="tab-csvcenter" class="tab-panel" style="display:none;">
+
+  <div class="route-ribbon" aria-hidden="true">
+    <svg viewBox="0 0 1000 28" preserveAspectRatio="none">
+      <path d="M0,14 Q125,0 250,14 T500,14 T750,14 T1000,14"
+            fill="none" stroke="var(--pink)" stroke-width="2" stroke-dasharray="1,10" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- UPLOAD CARD -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">Patient list</h2>
+        <p class="card-subtitle">Upload a CSV to get started. Columns: Name, Address, DOB, Coordinator (Provider and Notes optional).</p>
+      </div>
+    </div>
+
+    <div id="dropzone" class="dropzone" role="button" tabindex="0">
+      <p class="dz-title">Drop a CSV here, or click to choose a file</p>
+      <p class="dz-sub">This replaces the current list — use "Add another CSV" below to append instead</p>
+    </div>
+    <input type="file" id="fileInput" accept=".csv">
+    <input type="file" id="addFileInput" accept=".csv">
+
+    <div class="upload-actions">
+      <button id="downloadTemplateBtn" class="btn btn-secondary" type="button">📄 Download blank template</button>
+      <button id="addCsvBtn" class="btn btn-secondary" type="button">➕ Add another CSV</button>
+      <button id="downloadCsvBtn" class="btn btn-secondary" type="button">⬇️ Download current list as CSV</button>
+      <button id="clearAllBtn" class="btn btn-ghost" type="button">Clear all</button>
+    </div>
+
+    <p id="statusLine" class="status-line"></p>
+  </section>
+
+  <!-- MANUAL ADD CARD -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">➕ Add Client(s) Manually</h2>
+        <p class="card-subtitle">No CSV needed — fill in one or more rows below, then submit. Add another row before submitting if you have several to enter at once.</p>
+      </div>
+    </div>
+
+    <div id="manualAddRows"></div>
+
+    <div class="upload-actions">
+      <button id="addManualRowBtn" class="btn btn-secondary" type="button">+ Add another row</button>
+      <button id="submitManualAddBtn" class="btn btn-primary" type="button">Submit</button>
+    </div>
+    <p id="manualAddStatus" class="status-line"></p>
+  </section>
+
+  </div>
+
+  <div id="tab-about" class="tab-panel" style="display:none;">
+
+    <section class="card">
+      <div class="brand" style="margin-bottom:14px;">
+        <svg class="brand-mark" viewBox="0 0 60 24" aria-hidden="true" style="width:56px; height:26px;">
+          <polyline points="0,12 14,12 18,3 24,21 30,8 34,16 38,12 60,12"
+            fill="none" stroke="url(#aboutPulseGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="aboutPulseGradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="var(--pink)"/>
+              <stop offset="50%" stop-color="var(--peach)"/>
+              <stop offset="100%" stop-color="var(--lime)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="brand-name" style="font-size:1.6rem;">PULSE</span>
+      </div>
+      <p class="card-subtitle" style="font-size:1rem; color:var(--text);">
+        PULSE exists for one reason: to give home-visit providers back the hours they lose to bad routes. Every extra mile driven is a patient not seen — PULSE's job is to make sure the day's drive time serves the schedule, not the other way around.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Why PULSE exists</h2>
+      <p class="card-subtitle" style="font-size:0.95rem; color:var(--text); line-height:1.7;">
+        Picture the drive: a provider heads out to see a patient, passes within two minutes of another patient on her list, but has to keep going — because that patient wasn't in "today's group." An hour later, she's driving right back past that same street to catch someone else. Multiply that by every working day, every provider, every month. The miles add up to hours. The hours add up to patients who could have been seen but weren't.
+      </p>
+      <p class="card-subtitle" style="font-size:0.95rem; color:var(--text); line-height:1.7; margin-top:12px;">
+        That's the exact problem PULSE was built to end. Not a generic map, not a spreadsheet of addresses sorted by hand — a system that actually understands geography the way a driver does: cluster what's close, route what's efficient, and never force a detour just to satisfy a label on a list. Real roads, real drive times, real math — so the only thing standing between a provider and more patients seen each day is how many hours she has, not how badly the route was planned.
+      </p>
+      <p class="card-subtitle" style="font-size:0.95rem; color:var(--text); line-height:1.7; margin-top:12px;">
+        <strong>That's the pulse of it</strong> — less time on the road, more time at the door.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">What PULSE does</h2>
+      <div class="about-grid">
+        <div class="about-item">
+          <div class="about-emoji">🗂️</div>
+          <h3>Organizes your patients</h3>
+          <p>Upload a CSV once. PULSE geocodes every address and automatically clusters patients into tight, walkable groups — no manual sorting, no spreadsheets.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-emoji">🗺️</div>
+          <h3>Builds the smartest route</h3>
+          <p>Pick a group and how many stops you want. PULSE finds the closest real-road route using actual driving directions — not guesses — and shows you exactly when you'll arrive home.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-emoji">📅</div>
+          <h3>Remembers everything</h3>
+          <p>Every approved day lands on a calendar you can look back on, drag to reschedule, or export straight into your EHR system.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-emoji">🔔</div>
+          <h3>Watches the 30-day clock</h3>
+          <p>PULSE tracks who's due for a visit and flags anyone approaching or past 30 days since their last one — so nobody falls through the cracks.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">How a day works</h2>
+      <div class="route-ribbon" aria-hidden="true">
+        <svg viewBox="0 0 1000 28" preserveAspectRatio="none">
+          <path d="M0,14 Q125,0 250,14 T500,14 T750,14 T1000,14"
+                fill="none" stroke="var(--pink)" stroke-width="2" stroke-dasharray="1,10" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="card-subtitle">
+        <strong>1. Upload</strong> your patient list in Client Center.
+        <strong>2. Check groups</strong> on the Clients tab — PULSE clusters automatically, or draw your own.
+        <strong>3. Build a route</strong> on the Schedule tab — pick a group, set your stop count, generate.
+        <strong>4. Approve</strong> the day when it looks right, and it lands on your Calendar.
+        <strong>5. Export</strong> whenever you need a clean list for billing or your EHR.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">A note on how the numbers work</h2>
+      <p class="card-subtitle">
+        Drive times and the route line come from a live road-routing service — real streets, real turns, not straight-line guesses. If that service is ever briefly unreachable, PULSE automatically falls back to a straight-line estimate and tells you clearly when it has, so you always know which kind of number you're looking at.
+      </p>
+    </section>
+
+  </div>
+
+  <div id="tab-admin" class="tab-panel" style="display:none;">
+
+    <section class="card">
+      <h2 class="card-title">Theme</h2>
+      <p class="card-subtitle">Pick a look — saved automatically, applies everywhere.</p>
+      <select id="themeSelect" style="width:100%; max-width:340px; font-family: var(--font-mono); font-size:0.9rem; padding:10px 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text);">
+        <option value="light">☀️ Peach &amp; Pink (Light)</option>
+        <option value="dark">🌙 BlackPink (Dark)</option>
+        <option value="corporate">💼 Corporate Blue</option>
+        <option value="military">🎖️ Military Tactical</option>
+        <option value="mecha">🤖 Mecha Blue</option>
+        <option value="bitcoin">₿ Bitcoin Gold</option>
+        <option value="dracula">🧛 Dracula</option>
+        <option value="nord">❄️ Nord</option>
+        <option value="solarized">🌊 Solarized</option>
+        <option value="gruvbox">🍂 Gruvbox</option>
+        <option value="dungeon">😈 Diablo</option>
+      </select>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Practitioner info</h2>
+      <p class="card-subtitle">Stored locally on this device — used for reference for now.</p>
+      <div class="schedule-grid">
+        <label class="field">Name
+          <input type="text" id="adminPractitionerName">
+        </label>
+        <label class="field">Phone
+          <input type="text" id="adminPractitionerPhone">
+        </label>
+        <label class="field">Email
+          <input type="text" id="adminPractitionerEmail">
+        </label>
+      </div>
+      <button id="adminSaveInfoBtn" class="btn btn-primary" type="button" style="margin-top:14px;">Save</button>
+      <p id="adminInfoStatus" class="status-line"></p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Starting addresses (home, office, hospital, hub...)</h2>
+      <p class="card-subtitle">Add as many as you need — pick which one to use each time on the Schedule tab.</p>
+      <div id="adminAddressList" style="margin-bottom:14px;"></div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input type="text" id="adminNewAddressLabel" placeholder="Label (e.g. Office, Hospital Hub)" style="flex:1; min-width:160px; font-family: var(--font-mono); font-size:0.85rem; padding:9px 10px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text);">
+        <input type="text" id="adminNewAddressText" placeholder="Full address" style="flex:2; min-width:220px; font-family: var(--font-mono); font-size:0.85rem; padding:9px 10px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); color: var(--text);">
+        <button id="adminAddAddressBtn" class="btn btn-primary" type="button">Add</button>
+      </div>
+      <p id="adminAddressStatus" class="status-line"></p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Fix a stuck "Last Visit" date</h2>
+      <p class="card-subtitle">
+        Use this if someone shows as recently-visited (red/pink) even after you've cleared their schedule. This most often happens after re-uploading a patient CSV as a full replacement — every patient gets a fresh internal ID with no link to the old one, so old schedule data can't be matched back up anymore. This button recalculates every patient's Last Visit directly from your calendar's actual schedule history, matched by name, bypassing that ID mismatch entirely.
+      </p>
+      <button id="recalcLastVisitBtn" class="btn btn-primary" type="button">🔄 Recalculate all Last Visit dates</button>
+      <p id="recalcLastVisitStatus" class="status-line"></p>
+    </section>
+
+  </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
