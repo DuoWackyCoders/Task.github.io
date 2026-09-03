@@ -32,7 +32,7 @@ function todoMain() {
         peginationCtnr,
         todoModelCloseBtn,
         launchPendingBtn,
-        themeToggleBtn,
+        themeSelect,
         categoryListElem,
         subcategoryInput,
         addSubcategoryBtn,
@@ -57,8 +57,6 @@ function todoMain() {
     load();
     defaultDateToTodayIfEmpty();
     clearTable();                  // ✅ ensure calendar/table start clean
-    // requestNotifPermission();     // (A4 cleanup) OS notifications disabled
-    // sendMorningBriefingIfNeeded(); // (A4 cleanup) OS notifications disabled
     renderRows(todoList);
     updateSelectOptions();
     refreshSubcategoryUI();
@@ -81,9 +79,8 @@ function todoMain() {
         peginationCtnr = document.querySelector(".pagination-pages");
         todoModelCloseBtn = document.getElementById("todo-model-close-btn");
         launchPendingBtn = document.getElementById("launchPendingBtn");
-        console.log("launchPendingBtn:", launchPendingBtn);
 
-        themeToggleBtn = document.getElementById("themeToggleBtn");
+        themeSelect = document.getElementById("themeSelect");
         categoryListElem = document.getElementById("categoryList");
         subcategoryInput = document.getElementById("subcategoryInput");
         addSubcategoryBtn = document.getElementById("addSubcategoryBtn");
@@ -100,12 +97,6 @@ function todoMain() {
         briefingSubtitle = document.getElementById("briefing-subtitle");
         briefingList = document.getElementById("briefing-list");
         todoEditDoneCheckbox = document.getElementById("todo-edit-done");
-
-        console.log("briefingOverlay:", briefingOverlay);
-        console.log("briefingCloseBtn:", briefingCloseBtn);
-        console.log("briefingList:", briefingList);
-        console.log("briefingSubtitle:", briefingSubtitle);
-
     }
 
     function addListeners() {
@@ -123,7 +114,7 @@ function todoMain() {
         shortlistBtn.addEventListener("change", multipleFilter, false);
 
         todoModelCloseBtn.addEventListener("click", closeEditModelBox, false);
-        
+
         if (briefingCloseBtn) {
             briefingCloseBtn.addEventListener("click", closeBriefing, false);
         }
@@ -131,7 +122,6 @@ function todoMain() {
         if (briefingFooterCloseBtn) {
           briefingFooterCloseBtn.addEventListener("click", closeBriefing, false);
         }
-
 
         if (briefingOverlay) {
             briefingOverlay.addEventListener("click", function (e) {
@@ -147,7 +137,6 @@ function todoMain() {
             briefingList.addEventListener("click", onBriefingListClick, false);
         }
 
-
         changeBtn.addEventListener("click", commitEdit, false);
 
         todoTable.addEventListener("dragstart", onDragstart, false);
@@ -162,8 +151,8 @@ function todoMain() {
           launchPendingBtn.addEventListener("click", openBriefing, false);
         }
 
-        if (themeToggleBtn) {
-          themeToggleBtn.addEventListener("click", toggleTheme, false);
+        if (themeSelect) {
+          themeSelect.addEventListener("change", onThemeSelectChange, false);
         }
 
         if (inputElem2) {
@@ -192,26 +181,22 @@ function todoMain() {
             closeBriefing();
           }
         }, false);
-
     }
 
     function applyStoredTheme() {
+      const validThemes = ["light", "dark", "diablo", "bitcoin", "synthwave", "matrix", "gold", "aurora"];
       const stored = localStorage.getItem("tsk-theme");
-      const theme = stored === "dark" ? "dark" : "light";
+      const theme = validThemes.includes(stored) ? stored : "light";
       document.documentElement.setAttribute("data-theme", theme);
-      if (themeToggleBtn) {
-        themeToggleBtn.innerText = theme === "dark" ? "☀️" : "🌙";
+      if (themeSelect) {
+        themeSelect.value = theme;
       }
     }
 
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
+    function onThemeSelectChange() {
+      const next = themeSelect.value;
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem("tsk-theme", next);
-      if (themeToggleBtn) {
-        themeToggleBtn.innerText = next === "dark" ? "☀️" : "🌙";
-      }
     }
 
     function loadCategorySubcategoryMap() {
@@ -334,8 +319,9 @@ function todoMain() {
         let timeValue = timeInput.value;
         timeInput.value = "";
 
+        resetQuickTimePicker();
+
         let obj = {
-            // A comma is used to seperate the properties
             id: _uuid(),
             todo: inputValue,
             category: inputValue2,
@@ -352,12 +338,10 @@ function todoMain() {
         updateSelectOptions();
         refreshSubcategoryUI();
 
-        // ✅ rebuild list/calendar using your current filter + “Incomplete First”
         multipleFilter();
     }
 
     function updateSelectOptions() {
-        // collect category -> set of subcategories actually used in the list
         let categoryMap = new Map();
 
         todoList.forEach((obj) => {
@@ -370,7 +354,6 @@ function todoMain() {
             }
         });
 
-        //empty the select options
         selectElem.innerHTML = "";
 
         let defaultOptionElem = document.createElement('option');
@@ -397,7 +380,6 @@ function todoMain() {
             selectElem.appendChild(groupElem);
         }
 
-        // keep the "Category" autosuggest list in sync with categories you've actually used
         if (categoryListElem) {
             categoryListElem.innerHTML = "";
             for (let category of categoryMap.keys()) {
@@ -406,7 +388,6 @@ function todoMain() {
                 categoryListElem.appendChild(datalistOptionElem);
             }
         }
-
     }
 
     function save() {
@@ -417,23 +398,20 @@ function todoMain() {
     function load() {
         let retrieved = localStorage.getItem("todoList");
         todoList = JSON.parse(retrieved);
-        //console.log(typeof todoList)
         if (todoList == null)
             todoList = [];
 
-        // set the dropdown; if missing option, fall back to 15
         itemsPerPageSelectElem.value = String(itemsPerPage);
         if (itemsPerPageSelectElem.value !== String(itemsPerPage)) {
           itemsPerPage = 15;
           itemsPerPageSelectElem.value = "15";
           localStorage.setItem("todo-itemsPerPage", "15");
         }
-
     }
 
     function renderRows(arr) {
         renderPageNumbers(arr);
-        
+
         if (totalPages === 0) {
           currentPage = 1;
         } else {
@@ -449,8 +427,6 @@ function todoMain() {
     }
 
     function renderRow({ todo: inputValue, category: inputValue2, subcategory, id, date, time, done }) {
-        //add a new rule
-
         let trElem = document.createElement("tr");
         const tbody = todoTable.querySelector("tbody");
         tbody.appendChild(trElem);
@@ -458,7 +434,6 @@ function todoMain() {
         trElem.draggable = "true";
         trElem.dataset.id = id;
 
-        //checkbox cell
         let checkboxElem = document.createElement("input");
         checkboxElem.type = "checkbox";
         checkboxElem.addEventListener("click", checkboxClickCallback, false);
@@ -467,35 +442,28 @@ function todoMain() {
         tdElem1.appendChild(checkboxElem);
         trElem.appendChild(tdElem1);
 
-        //date cell
         let dateElem = document.createElement("td");
-        dateElem.innerText = date; //formatDate(date);
+        dateElem.innerText = date;
         trElem.appendChild(dateElem);
         dateElem.addEventListener("click", onDateClick, false);
 
         function onDateClick(e) {
-            //console.log(calendar);
             calendar.gotoDate(e.target.innerText);
         }
 
-
-        //time cell
         let timeElem = document.createElement("td");
         timeElem.innerText = formatTimeForTable(time);
         trElem.appendChild(timeElem);
 
-        //to-do cell
         let tdElem2 = document.createElement("td");
         tdElem2.innerText = inputValue;
         trElem.appendChild(tdElem2);
 
-        //category cell
         let tdElem3 = document.createElement("td");
         tdElem3.innerText = subcategory ? `${inputValue2} › ${subcategory}` : inputValue2;
         tdElem3.className = "categoryCell";
         trElem.appendChild(tdElem3);
 
-        // edit cell
         let editSpan = document.createElement("span");
         editSpan.innerText = "edit";
         editSpan.className = "material-symbols-outlined";
@@ -504,12 +472,11 @@ function todoMain() {
         editSpan.style.cursor = "pointer";
         editSpan.addEventListener("click", toEditItem, false);
         editSpan.dataset.id = id;
-        
+
         let editTd = document.createElement("td");
         editTd.appendChild(editSpan);
         trElem.appendChild(editTd);
 
-        //delete cell
         let spanElem = document.createElement("span");
         spanElem.innerText = "delete";
         spanElem.className = "material-symbols-outlined";
@@ -518,12 +485,11 @@ function todoMain() {
         spanElem.style.cursor = "pointer";
         spanElem.addEventListener("click", deleteItem, false);
         spanElem.dataset.id = id;
-        
+
         let tdElem4 = document.createElement("td");
         tdElem4.appendChild(spanElem);
         trElem.appendChild(tdElem4);
 
-        // done button
         checkboxElem.type = "checkbox";
         checkboxElem.checked = done;
         if (done) {
@@ -532,9 +498,7 @@ function todoMain() {
             trElem.classList.remove("strike");
         }
 
-
         dateElem.dataset.type = "date";
-        //dateElem.dataset.value = date;
         timeElem.dataset.type = "time";
         tdElem2.dataset.type = "todo";
         tdElem3.dataset.type = "category";
@@ -556,13 +520,11 @@ function todoMain() {
 
             const calendarEvent = calendar.getEventById(this.dataset.id);
             if (calendarEvent) calendarEvent.remove();
-
         }
 
         function checkboxClickCallback() {
           const id = this.dataset.id;
 
-          // update data model
           for (let i = 0; i < todoList.length; i++) {
             if (todoList[i].id === id) {
               todoList[i].done = this.checked;
@@ -570,35 +532,26 @@ function todoMain() {
             }
           }
 
-          // update row style
           if (this.checked) {
             trElem.classList.add("strike");
           } else {
             trElem.classList.remove("strike");
           }
 
-          // update calendar event color
-          //const ev = calendar.getEventById(id);
-            //if (ev) {
-              //ev.setProp("color", this.checked ? "#7a0000" : "#041421");
-            //}
-
-            const ev = calendar.getEventById(id);
-            if (ev) {
-              ev.setProp("classNames", this.checked ? ["event-done"] : ["event-pending"]);
-            }
-            // - Upto here
+          const ev = calendar.getEventById(id);
+          if (ev) {
+            ev.setProp("classNames", this.checked ? ["event-done"] : ["event-pending"]);
+          }
 
           save();
           multipleFilter();
         }
-
     }
 
     function _uuid() {
         var d = Date.now();
         if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-            d += performance.now(); //use high-precision timer if available
+            d += performance.now();
         }
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = (d + Math.random() * 16) % 16 | 0;
@@ -606,6 +559,7 @@ function todoMain() {
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
     }
+
     function sortEntry() {
         todoList.sort((a, b) => {
             let aDate = Date.parse(a.date);
@@ -624,7 +578,7 @@ function todoMain() {
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             eventDisplay: "block",
-            initialDate: new Date(), //'2024-05-07',
+            initialDate: new Date(),
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -652,17 +606,6 @@ function todoMain() {
         calendar.render();
     }
 
-    // - Replacing this with non color to test and remove after if I like.
-    // function addEvent({ id, todo, date, time, done }) {
-      //calendar.addEvent({
-        //id,
-        //title: todo,
-        //start: time === "" ? date : `${date}T${time}`,
-        //color: done ? "#b23b3b" : "#2f3b3b", // dark red when completed
-        //classNames: done ? ["event-done"] : ["event-pending"],
-      //});
-    //}
-
     function addEvent({ id, todo, date, time, done }) {
       calendar.addEvent({
         id,
@@ -678,7 +621,6 @@ function todoMain() {
 
       calendar.getEvents().forEach(ev => ev.remove());
     }
-
 
     function multipleFilter() {
         clearTable();
@@ -724,22 +666,18 @@ function todoMain() {
 
     function renderBriefing() {
         if (!briefingSubtitle || !briefingList) return;
-        
+
       const { pendingToday, completedCount } = getTodayStats();
 
-        // subtitle
       briefingSubtitle.innerText = `Pending today: ${pendingToday.length} • Completed: ${completedCount}`;
 
-      // clear list
       briefingList.innerHTML = "";
 
-      // empty state
       if (pendingToday.length === 0) {
       briefingList.innerHTML = `<div class="briefing-empty">No pending tasks for today. Maintain momentum.</div>`;
       return;
     }
 
-    // render rows
     pendingToday.forEach(t => {
       const timeLabel = formatTimeHHMM(t.time);
       const categoryLabel = t.category || "—";
@@ -762,19 +700,16 @@ function todoMain() {
       const btn = e.target.closest("button.quicktime-btn");
       if (!btn) return;
 
-      // hour
       if (btn.dataset.hour) {
         selectedHour12 = Number(btn.dataset.hour);
         setActiveButton("[data-hour]", btn);
       }
 
-      // minute
       if (btn.dataset.minute) {
         selectedMinute = btn.dataset.minute;
         setActiveButton("[data-minute]", btn);
       }
 
-      // am/pm
       if (btn.dataset.ampm) {
         selectedAmPm = btn.dataset.ampm;
         setActiveButton("[data-ampm]", btn);
@@ -784,7 +719,6 @@ function todoMain() {
     }
 
     function setActiveButton(selectorPrefix, activeBtn) {
-      // Clear active state within the picker for that group
       if (!quickTimePicker) return;
       const groupButtons = quickTimePicker.querySelectorAll(`button.quicktime-btn${selectorPrefix ? selectorPrefix : ""}`);
       groupButtons.forEach(b => b.classList.remove("is-active"));
@@ -792,7 +726,6 @@ function todoMain() {
     }
 
     function updateTimeInputFromQuickPicker() {
-      // Only write when all 3 selected
       if (!timeInput || !quickTimePreview) return;
 
       if (!selectedHour12 || !selectedMinute || !selectedAmPm) {
@@ -800,15 +733,14 @@ function todoMain() {
         return;
       }
 
-      // Convert 12h -> 24h
-      let hour24 = selectedHour12 % 12; // 12 -> 0
+      let hour24 = selectedHour12 % 12;
       if (selectedAmPm === "PM") hour24 += 12;
 
       const hh = String(hour24).padStart(2, "0");
       const mm = String(selectedMinute).padStart(2, "0");
 
-      timeInput.value = `${hh}:${mm}`; // must stay 24h for <input type="time">
-      quickTimePreview.innerText = `Set: ${selectedHour12}:${mm} ${selectedAmPm}`; // user-facing
+      timeInput.value = `${hh}:${mm}`;
+      quickTimePreview.innerText = `Set: ${selectedHour12}:${mm} ${selectedAmPm}`;
     }
 
     function resetQuickTimePicker() {
@@ -846,11 +778,10 @@ function todoMain() {
     }
 
     function markTaskDoneFromBriefing(id) {
-      // 1) Update data model
       let changed = false;
       for (let i = 0; i < todoList.length; i++) {
         if (todoList[i].id === id) {
-          if (todoList[i].done) return; // already done
+          if (todoList[i].done) return;
           todoList[i].done = true;
           changed = true;
           break;
@@ -858,18 +789,10 @@ function todoMain() {
       }
       if (!changed) return;
 
-      // 2) Persist
       save();
-
-      // 3) Rebuild UI from the model (table + calendar) using your current filter + pagination
       multipleFilter();
-
-      // 4) Rebuild briefing (counts + list)
       renderBriefing();
     }
-
-
-
 
     function commitEdit(event) {
         closeEditModelBox();
@@ -882,7 +805,6 @@ function todoMain() {
         let time = document.getElementById("todo-edit-time").value;
         let done = todoEditDoneCheckbox ? todoEditDoneCheckbox.checked : false;
 
-        // remove from calendar
         const ev = calendar.getEventById(id);
         if (ev) ev.remove();
 
@@ -905,7 +827,7 @@ function todoMain() {
 
         save();
         updateSelectOptions();
-        multipleFilter(); // ✅ rebuild table + calendar view correctly under pagination/filter
+        multipleFilter();
 
         if (briefingOverlay && briefingOverlay.classList.contains("briefing-slidedIntoView")) {
           renderBriefing();
@@ -919,7 +841,7 @@ function todoMain() {
 
         if (event.target)
             id = event.target.dataset.id;
-        else // calendar event
+        else
             id = event.id;
 
         preFillEditForm(id);
@@ -941,7 +863,6 @@ function todoMain() {
           todoEditSubcategoryInput.value = subcategory || "";
         }
 
-        // NEW: prefill completed checkbox
         if (todoEditDoneCheckbox) {
           todoEditDoneCheckbox.checked = !!done;
         }
@@ -950,59 +871,41 @@ function todoMain() {
     }
 
     function onDragstart(event) {
-        draggingElement = event.target; //trElem
+        draggingElement = event.target;
     }
 
     function onDrop(event) {
-
-        /* handling visual drag and drop of the rows */
-
-        // prevent when target is table
         if (event.target.matches("table"))
             return;
 
         let beforeTarget = event.target;
 
-        // to look thought parent until it is tr
         while (!beforeTarget.matches("tr"))
             beforeTarget = beforeTarget.parentNode;
 
-        // to be implemented
-        //beforeTarget.style.marginTop = "1rem";
-
-        // prevent when the tr is the first row
         if (beforeTarget.matches(":first-child"))
             return;
 
-        // visualize the drag and drop
         todoTable.insertBefore(draggingElement, beforeTarget);
-
-        /* handling the array */
 
         let tempIndex;
 
-        // find the index of one to be taken out
         todoList.forEach((todoObj, index) => {
             if (todoObj.id == draggingElement.dataset.id)
                 tempIndex = index;
         });
 
-        //pop the element
         let [toInsertObj] = todoList.splice(tempIndex, 1);
 
-        //find the index of the one to be inserted before
         todoList.forEach((todoObj, index) => {
             if (todoObj.id == beforeTarget.dataset.id)
                 tempIndex = index;
         });
 
-        //insert the temp 
         todoList.splice(tempIndex, 0, toInsertObj);
 
-        // update storage
         save();
     }
-
 
     function onDragover(event) {
         event.preventDefault();
@@ -1010,7 +913,6 @@ function todoMain() {
 
     function calendarEventDragged(event) {
         let id = event.id;
-        console.log(`event.start :${event.start}`);
         let dateObj = new Date(event.start);
         let year = dateObj.getFullYear();
         let month = dateObj.getMonth() + 1;
@@ -1029,7 +931,6 @@ function todoMain() {
         }
 
         let toStoreDate = `${year}-${paddedMonth}-${paddedDate}`;
-        console.log(toStoreDate);
 
         todoList.forEach(todoObj => {
             if (todoObj.id == id) {
@@ -1097,13 +998,6 @@ function todoMain() {
         multipleFilter();
     }
 
-    //function requestNotifPermission() {
-      //if (!("Notification" in window)) return;
-      //if (Notification.permission === "default") {
-        //Notification.requestPermission().then(() => sendMorningBriefingIfNeeded());
-      //}
-    //}
-
     function formatTimeHHMM(t) {
       if (!t) return "—";
       const [h, m] = t.split(":").map(Number);
@@ -1113,8 +1007,8 @@ function todoMain() {
     }
 
     function formatTimeForTable(t) {
-      if (!t) return "";          // table should be blank if no time
-      return formatTimeHHMM(t);   // your existing formatter => "10:30 PM"
+      if (!t) return "";
+      return formatTimeHHMM(t);
     }
 
     function getTodayKey() {
@@ -1132,23 +1026,21 @@ function todoMain() {
       }
     }
 
-
     function setDateToToday() {
       if (!dateInput) return;
       dateInput.value = getTodayKey();
     }
-    
+
     function setDateToNextBusinessDay() {
       if (!dateInput) return;
 
       const d = new Date();
       d.setDate(d.getDate() + 1);
 
-      // 0=Sun, 6=Sat
       const day = d.getDay();
-      if (day === 6) {        // Saturday -> Monday
+      if (day === 6) {
         d.setDate(d.getDate() + 2);
-      } else if (day === 0) { // Sunday -> Monday
+      } else if (day === 0) {
         d.setDate(d.getDate() + 1);
       }
 
@@ -1158,7 +1050,6 @@ function todoMain() {
 
       dateInput.value = `${yyyy}-${mm}-${dd}`;
     }
-
 
     function getTodayStats() {
       const todayKey = getTodayKey();
@@ -1177,8 +1068,6 @@ function todoMain() {
         completedCount: completedToday.length,
       };
     }
-
-
 
     function buildTodaysAgendaLines() {
       const today = new Date();
@@ -1203,64 +1092,4 @@ function todoMain() {
       return { todayKey, lines };
     }
 
-    //function sendMorningBriefingIfNeeded(mode = "auto") {
-        //console.log("Notification.permission:", Notification.permission, "mode:", mode);
-      //if (!("Notification" in window)) return;
-      //if (Notification.permission !== "granted") return;
-
-      //const { todayKey, lines } = buildTodaysAgendaLines();
-
-        //console.log("Briefing key:", todayKey);
-        //console.log("Briefing lines:", lines);
-
-
-      //const lastSent = localStorage.getItem("todo-lastMorningBriefing");
-      //if (lastSent === todayKey) return;
-
-      //const header =
-      //mode === "manual"
-        //? `High Commander — here is what is still pending for today:\n`
-      //  : `Good morning, High Commander.\n\nIt's time to reign.\n\n`;
-
-    //const notifTag =
-      //mode === "manual" ? `todo-daily-briefing-manual-${Date.now()}` : "todo-daily-briefing";
-
-    //new Notification("Daily Command Briefing", {
-      //body: `${header}
-    //${lines.join("\n")}
-
-    //Execute with precision.`,
-      //tag: notifTag,
-        //requireInteraction: true,
-   // });
-
-     // localStorage.setItem("todo-lastMorningBriefing", todayKey);
-    //}
-
-  //  function launchPendingTasks() {
-    //  console.log("🚀 Launch Pending Tasks clicked");
-
-    //  localStorage.removeItem("todo-lastMorningBriefing");
-
-    //  if (!("Notification" in window)) return;
-
-   //   if (Notification.permission === "granted") {
-    //    sendMorningBriefingIfNeeded("manual");
-      //  return;
-    //  }
-
-     // if (Notification.permission === "default") {
-     //   Notification.requestPermission().then((perm) => {
-       //   if (perm === "granted") {
-          //  sendMorningBriefingIfNeeded("manual");
-         // } else {
-         //   alert("Notifications are blocked. Allow notifications to use Launch Pending Tasks.");
-        //  }
-       // });
-       // return;
-     // }
-
-      // permission === "denied"
-      //alert("Notifications are blocked. Enable them in browser site settings to use Launch Pending Tasks.");
-    //}
 }
